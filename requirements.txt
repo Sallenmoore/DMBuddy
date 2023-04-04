@@ -1,0 +1,51 @@
+##################################
+#           PRODUCTION           #
+##################################
+
+##### Frameworks #####
+--extra-index-url https://test.pypi.org/simple/
+autonomous == 0.0.57
+
+##### Configuration and Documentation #####
+
+
+##### System #####
+
+
+##### API #####
+
+
+##### Database #####
+
+
+##### Frontend #####
+
+
+
+##### Network #####
+
+requests
+gunicorn
+
+##### Security #####
+
+
+##### Async ##### 
+
+
+##### AI #####
+
+
+##### Parsing #####
+
+dateparser
+
+##################################
+#           DEVELOPMENT          #
+##################################
+
+pytest
+pytest-cov
+
+
+

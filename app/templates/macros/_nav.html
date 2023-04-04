@@ -1,0 +1,92 @@
+{% macro sidenav() -%}
+<div class="is-mobile-only has-bg-primary" id="slideout-menu">
+  <nav class="top has-bg-secondary">
+    <div class="top__burger has-animate is-end" id="slideoutmenu-close">
+      <span></span>
+    </div>
+  </nav>
+  <nav class="menu has-bg-primary">
+    <p class="menu__title">List heading</p>
+    <ul class="menu__list">
+      <li><a href="#">first</a></li>
+      <li><a href="#">second</a></li>
+      <li><a href="#">third</a></li>
+    </ul>
+    <p class="menu__divider"></p>
+    <p class="menu__title">Second list heading</p>
+    <ul class="menu__list">
+      <li><a href="#">first</a></li>
+      <li><a href="#">second</a></li>
+      <li><a href="#">third</a></li>
+    </ul>
+  </nav>
+</div>
+{%- endmacro %}
+
+{% macro fullnav(footer_text="Contact Info") -%}
+
+{{ sidenav() }}
+
+<div class="hero is-large">
+  <div class="hero__header">
+    <nav class="top is-mobile-responsive ">
+      <div class="top__brand">
+        <a href="/">
+          <div class="grid">
+            <div class="column is-4">
+              <div class="image is-medium">
+                <img src="{{url_for('static', filename='images/logo.png')}}" />
+              </div>
+            </div>
+            <div class="column">
+              <span class="is-big-heading">My Site</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="top__social is-end">
+        <ul>
+          <li>
+            <a href="https://github.com/Sallenmoore">
+              <iconify-icon icon="mdi:github" width="50"></iconify-icon></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="top__links">
+        <ul id="nav_links">
+          <li>
+            <a href="#templates">
+              <iconify-icon icon="icomoon-free:insert-template" style="vertical-align:middle;"
+                width="50"></iconify-icon>
+            </a>
+          </li>
+          <li>
+            <a href="#portfolio">
+              <iconify-icon icon="dashicons:portfolio" style="vertical-align:middle;" width="50"></iconify-icon>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="top__buttons">
+        <a href="#" class="button is-rounded">Button</a>
+      </div>
+      <div class="top__burger has-animate is-end" id="burger">
+        <span></span>
+      </div>
+    </nav>
+  </div>
+  <div class="hero__content">
+    <div class="grid">
+      <div class="column is-vertically-centered">
+      </div>
+    </div>
+  </div>
+  <div class="hero__footer">
+    <div class="container has-text-center">
+      <h2>{{footer_text}}</h2>
+    </div>
+  </div>
+</div>
+
+{%- endmacro %}

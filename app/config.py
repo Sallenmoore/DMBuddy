@@ -19,7 +19,7 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    LOG_LEVEL = logging.INFO
+    LOG_LEVEL = logging.WARNING
     DEBUG = True
     TESTING = True
     # TRAP_HTTP_EXCEPTIONS = True

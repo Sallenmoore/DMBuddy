@@ -1,6 +1,6 @@
 import sys
 
-from app.models.model import Model
+from app.models.maze import Model
 
 from autonomous import log
 

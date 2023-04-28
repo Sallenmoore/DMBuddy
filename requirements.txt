@@ -4,7 +4,7 @@
 
 ##### Frameworks #####
 --extra-index-url https://test.pypi.org/simple/
-autonomous == 0.0.57
+autonomous == 0.0.75
 
 ##### Configuration and Documentation #####
 
@@ -19,7 +19,6 @@ autonomous == 0.0.57
 
 
 ##### Frontend #####
-
 
 
 ##### Network #####
@@ -39,6 +38,10 @@ gunicorn
 ##### Parsing #####
 
 dateparser
+
+##### Utility #####
+
+DungeonGenerator #https://pypi.org/project/DungeonGenerator/
 
 ##################################
 #           DEVELOPMENT          #

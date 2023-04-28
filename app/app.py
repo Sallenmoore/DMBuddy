@@ -1,13 +1,12 @@
 import os
 
+# from models import Model
+from autonomous.assets import build_assets
 from config import DevelopmentConfig
 from flask import Flask
 
-# from views.admin import admin_page
-# from views.index import index_page
-
-# from models import Model
-# from autonomous.assets import build_assets
+from views.admin import admin_page
+from views.index import index_page
 
 
 def create_app():
@@ -23,7 +22,7 @@ def create_app():
     #                             Extensions                        #
     #################################################################
 
-    # app.before_first_request(lambda: build_assets())
+    app.before_request(lambda: build_assets())
 
     #################################################################
     #                             ROUTES                            #
@@ -32,6 +31,6 @@ def create_app():
     ######################################
     #           Blueprints               #
     ######################################
-    # app.register_blueprint(index_page)
-    # app.register_blueprint(admin_page, url_prefix="/admin")
+    app.register_blueprint(index_page)
+    app.register_blueprint(admin_page, url_prefix="/admin")
     return app

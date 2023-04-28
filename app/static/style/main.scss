@@ -1,28 +1,30 @@
 //////////////////////////////////////////////
 //                 Variables                //
 //////////////////////////////////////////////
+
+/// - https://orbitcss.com/documentation/sass-variables
 // List of variables
-// - https://orbitcss.com/documentation/sass-variables
+$grid-sizes: repeat(20, 1fr) !default; // 
+
 //////////////////////////////////////////////
 //                 Styles                   //
 //////////////////////////////////////////////
 
-@import 'all';
+@import 'autostyle/all';
 
 // Custom Elements
-:root
+// :root
+// {
+//     --var: " ";
+// }
+
+.wall-cell
 {
-    --animated-graph-msg: " ";
+    background: url(/static/images/wall.jpg);
+    background-size: cover;
 }
 
-#graph-container:before
+.floor-cell
 {
-    content: var(--animated-graph-msg);
-    position: absolute;
-    top: inherit;
-    left: inherit;
-
-    font-weight: 600;
-    font-size: 3em;
-    color: #ffffff; //$primary-text;
+    background-color: rgb(113, 30, 11);
 }

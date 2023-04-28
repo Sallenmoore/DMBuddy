@@ -1,0 +1,143 @@
+{% macro statblock(info, player_view=False) -%}
+<pre>
+{% for k,v in info.items() %}
+{{k}}: {{v}}
+{% endfor%}
+</pre>
+<div class="row statblock is-vertical">
+    <div class="column">
+        <h1>{{info['name']}}</h1>
+        <p style="font-style: italic;">{{info['desc']}}</p>
+    </div>
+    <div class="column">
+        <div class="row has-spacing">
+            <div class="column is-one-third">
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <div class="top-stats">
+                    <ul>
+                        <li>
+                            <span class="stat">Armor Class</span> {{info['armor_class']['value']}}
+                        </li>
+                        <li>
+                            <span class="stat">Hit Points</span> {{info['hit_points']}}
+                        </li>
+                        <li>
+                            <span class="stat">Speed</span>
+                            <ul>
+                                {% for k,v in info['speed'].items() %}
+                                <li>{{k}}: {{v}} </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <div class="row">
+                        <div class="column is-shrink">
+                            <p class="stat">STR</p>
+                            <p>{{info['strength']}}</p>
+                        </div> <!-- ability strength -->
+                        <div class="column is-shrink">
+                            <p class="stat">DEX</p>
+                            <p>{{info['dexterity']}}</p>
+                        </div> <!-- ability dexterity -->
+                        <div class="column is-shrink">
+                            <p class="stat">CON</p>
+                            <p>{{info['constitution']}}</p>
+                        </div> <!-- ability constitution -->
+                        <div class="column is-shrink">
+                            <p class="stat">INT</p>
+                            <p>{{info['intelligence']}}</p>
+                        </div> <!-- ability intelligence -->
+                        <div class="column is-shrink">
+                            <p class="stat">WIS</p>
+                            <p>{{info['wisdom']}}</p>
+                        </div> <!-- ability wisdom -->
+                        <div class="column is-shrink">
+                            <p class="stat">CHA</p>
+                            <p>{{info['charisma']}}</p>
+                        </div> <!-- ability charisma -->
+                    </div> <!-- abilities -->
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <ul>
+                        <li>
+                            <span class="stat">Damage Immunities</span>
+                            {{info['damage_immunities'] }}
+                        </li>
+                        <li>
+                            <span class="stat">Condition Immunities</span>
+                            {{info['condition_immunities']}}
+                        </li>
+                        <li>
+                            <span class="stat">Senses</span>
+                            {{info['senses']}}
+                        </li>
+                        <li>
+                            <span class="stat">Languages</span>
+                            {{info['languages']}}
+                        </li>
+                        <li>
+                            <span class="stat">Challenge</span>
+                            {{info['challenge_rating']}}
+                        </li>
+                    </ul>
+                </div>
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <ul>
+                    {% for trait in info['traits'] %}
+                    <li>
+                        <span class="stat">{{trait['title']}}</span> {{trait['description']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div> <!-- section left -->
+            <div class="column is-one-third">
+                <div class="image">
+                    <img src="{{info['image']}}" />
+                </div>
+            </div><!-- section left -->
+            <div class="column is-one-third">
+                <h3>Actions</h3>
+                <ul>
+                    {% for action in info['actions'] %}
+                    <li>
+                        <span class="stat">{{action['name']}}</span>
+                        {{action['desc']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <h3>Reactions</h3>
+                <ul>
+                    {% for action in info['reactions'] %}
+                    <li>
+                        <span class="stat">{{action['name']}}</span>
+                        {{action['desc']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <h3>Special Abilities</h3>
+                <ul>
+                    {% for sp in info['special_abilities'] %}
+                    <li>
+                        <span class="stat">{{sp['name']}}</span> {{sp['desc']}}
+                    </li>
+                    {% endfor %}
+                    <h4>Legendary Actions</h4>
+                    {% for sp in info['legendary_actions'] %}
+                    <li>
+                        <span class="stat">{{sp['name']}}</span> {{sp['desc']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

@@ -1,0 +1,6 @@
+[submodule "autostyle"]
+	path = vendor/autostyle
+	url = git@github.com:Sallenmoore/autostyle.git
+[submodule "autojs"]
+	path = vendor/autojs
+	url = git@github.com:Sallenmoore/autojs.git

@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 {% import 'macros/_nav.html' as nav with context %}
 
+
 {% block content %}
 
-{{ nav.fullnav(footer_text="Template") }}
+{{ nav.fullnav() }}
 
-<div class="grid has-bg-primary">
-  <div class="column has-bg-secondary">
-    Content A
-  </div>
-  <div class="column has-bg-secondary">
-    Content B
+
+<div class="container is-full">
+  <div class="grid">
+    {% for r in maze %}
+    <div class="cell dungeon-cell">
+    </div>
+    {% endfor %}
   </div>
 </div>
-
 {% endblock %}

@@ -3,13 +3,13 @@
 
 all: test clean run start
 
-APP_NAME?=app
+APP_NAME?=dmbuddy
 CONTAINERS=$$(sudo docker ps -a -q)
 
 ###### Database #######
 
 create-network:
-	if [ -z $$(docker network ls --filter name=app_net | grep -w app_net) ]; then \
+	if [ -z "$$(docker network ls --filter name=app_net | grep -w app_net)" ]; then \
 		docker network create app_net; \
 	fi
 
@@ -40,7 +40,7 @@ debug: run
 
 tests: 
 	docker-compose up --build -d
-	docker exec -it $(APP_NAME) python -m pytest --cov=autonomous -rx -l -x --log-level=INFO --no-cov-on-fail
+	docker exec -it $(APP_NAME) python -m pytest --cov=app -rx -l -x --log-level=INFO --no-cov-on-fail
 
 RUNTEST?="test_"
 test:

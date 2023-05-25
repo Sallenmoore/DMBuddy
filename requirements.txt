@@ -4,7 +4,7 @@
 
 ##### Frameworks #####
 --extra-index-url https://test.pypi.org/simple/
-autonomous == 0.0.75
+autonomous == 0.0.84
 
 ##### Configuration and Documentation #####
 

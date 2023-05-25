@@ -3333,8 +3333,6 @@ label:not(:last-child) {
 }
 .image.is-thumbnail img {
   padding: var(--padding);
-  max-width: 100%;
-  height: auto;
 }
 .image.is-rounded {
   --border-radius: 50%;
@@ -3409,20 +3407,34 @@ label:not(:last-child) {
 
 .modal {
   --border-radius: 10px;
-  --width: 75%;
+  --width: 80%;
   --padding: 1rem;
   padding: var(--padding);
-  max-width: var(--width);
+  width: 100%;
+  height: 100%;
   border: 0;
-  box-shadow: 0 0 1em rgba(0, 0, 0, 0.2);
+  background: linear-gradient(45deg, rgba(28, 28, 28, 0.5), rgba(255, 255, 255, 0.5));
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+.modal.is-active {
+  display: block;
+}
+.modal .modal__content {
+  top: 5rem;
+  position: relative;
+  background: var(--color-white);
+  height: var(--width);
   border-radius: var(--border-radius);
+  padding: var(--padding);
+  color: black;
+  overflow: scroll;
 }
 .modal > * {
   margin: 0 0 0.5rem 0;
-}
-.modal::backdrop {
-  background: linear-gradient(45deg, #1c1c1c, #ffffff);
-  opacity: 0.4;
 }
 .modal.is-full {
   border-radius: 0;
@@ -3431,9 +3443,8 @@ label:not(:last-child) {
 .modal .close-modal {
   content: "X";
   cursor: pointer;
-  font-size: 3rem;
+  font-size: 2rem;
   color: var(--color-light-grey);
-  position: absolute;
   bottom: 0;
   right: 0.25em;
   padding: 0;
@@ -4094,13 +4105,22 @@ label:not(:last-child) {
     transform: rotate(360deg);
   }
 }
-.wall-cell {
-  background: url(/static/images/wall.jpg);
-  background-size: cover;
+input[type=text], select, option {
+  color: #e0d2d2;
+  font-size: 1.5rem;
+  font-weight: 500;
 }
 
-.floor-cell {
-  background-color: rgb(113, 30, 11);
+option {
+  color: #1c1c1c;
+}
+
+#pc_list li {
+  border: 1px solid #1c1c1c;
+}
+
+.tapered-rule {
+  margin: 1rem 0;
 }
 
 /*# sourceMappingURL=main.css.map */

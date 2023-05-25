@@ -1,33 +1,4 @@
-{% import 'macros/_statblock.html' as statblock with context %}
-
-{% macro sidenav() -%}
-<div class="is-mobile-only has-bg-primary" id="slideout-menu">
-  <nav class="top has-bg-secondary">
-    <div class="top__burger has-animate is-end" id="slideoutmenu-close">
-      <span></span>
-    </div>
-  </nav>
-  <nav class="menu has-bg-primary">
-    <p class="menu__title">List heading</p>
-    <ul class="menu__list">
-      <li><a href="#">first</a></li>
-      <li><a href="#">second</a></li>
-      <li><a href="#">third</a></li>
-    </ul>
-    <p class="menu__divider"></p>
-    <p class="menu__title">Second list heading</p>
-    <ul class="menu__list">
-      <li><a href="#">first</a></li>
-      <li><a href="#">second</a></li>
-      <li><a href="#">third</a></li>
-    </ul>
-  </nav>
-</div>
-{%- endmacro %}
-
 {% macro fullnav(footer_text="Contact Info") -%}
-
-{{ sidenav() }}
 
 <div class="hero">
   <div class="hero__header">
@@ -66,41 +37,13 @@
             </a>
           </li>
           <li>
-            <a href="#spells">
+            <a class="open-modal" data-target="dmnotes">
               <iconify-icon icon="game-icons:spell-book"></iconify-icon>
             </a>
           </li>
         </ul>
       </div>
     </nav>
-  </div>
-  <div class="hero__content">
-    <div class="section">
-      <h2> Quick Reference </h2>
-      <div class="row">
-        <div class="column">
-          <div class="row">
-            <div class="column">
-              <label>Category</label>
-              <div class="is-select">
-                <select name="category" id="category">
-                  <option value="monsters">Monsters</option>
-                  <option value="magicitems">Magic Items</option>
-                  <option value="spells">Spells</option>
-                </select>
-              </div>
-            </div>
-            <div class="column">
-              <label>Search</label>
-              <input name="search" id="search" type="text" placeholder="search">
-            </div>
-          </div>
-        </div>
-        <div class="column" id="results">
-          {{ statblock.statblock(info=test) }}
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 

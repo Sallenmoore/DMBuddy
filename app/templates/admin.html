@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% import 'macros/_nav.html' as nav with context %}
+{% import 'macros/_widgets.html' as widgets with context %}
+
+{% block content %}
+
+{{ nav.fullnav() }}
+{{widgets.dmnotes() }}
+
+<div class="section">
+    <div class="row">
+        <div class="column">
+            <h2> Player Characters </h2>
+            <button class="button" id="update-pcs">Update</button>
+            <ul class="has-no-list-style" id="pc-list">
+                {% for p in players %}
+                <li data-pk="{{p.pk}}">
+                    <div class="row">
+                        <div class="column">
+                            <label>{{p.name}}</label>
+                        </div>
+                        <div class="column is-shrink">
+                            <div class="is-input-group">
+                                <input type="number" value="{{p.inititive}}" name="player-initiatve">
+                                <a class="button is-primary initiative-form">
+                                    <iconify-icon icon="lucide:list-start"></iconify-icon>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="row is-vertical">
+                <div class="column">
+                    <input type="text" id="pc_id" name="pc_id" placeholder="DnDBeyond ID#">
+                </div>
+                <div class="column">
+                    <button class="button" id="pc_add">Add Player</button>
+                </div>
+            </div>
+        </div>
+        <div class="column" id="detail-view">
+            <h2> Details View</h2>
+        </div>
+        <div class="column">
+        </div>
+    </div>
+</div>
+<div class="section">
+    <div class="row">
+        <div class="column is-one-third">
+            <h2> Quick Reference </h2>
+            <div class="row is-vertical">
+                <div class="column">
+                    <div class="row" id="search-form">
+                        <div class="column is-shrink">
+                            <label>Category</label>
+                            <div class="is-select">
+                                <select name="category" id="category">
+                                    <option value="monsters">Monsters</option>
+                                    <option value="items">Items</option>
+                                    <option value="spells">Spells</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <label>Search</label>
+                            <input name="search" id="search" type="text">
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="row is-vertical" id="results">
+                        {% for sb in results %}
+                        {{ widgets.statblock(info=sb) }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column is-one-third">
+            <h2> NPC Reference </h2>
+        </div>
+        <div class="column is-one-third">
+            <h2> DM Notes </h2>
+            <textarea id="dm_notes">
+            </textarea>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}

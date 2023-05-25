@@ -18,13 +18,20 @@ $grid-sizes: repeat(20, 1fr) !default; //
 //     --var: " ";
 // }
 
-.wall-cell
-{
-    background: url(/static/images/wall.jpg);
-    background-size: cover;
+
+input[type=text], select, option{
+    color:$light;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+option{
+    color:$primary;
 }
 
-.floor-cell
-{
-    background-color: rgb(113, 30, 11);
+#pc_list li{
+    border: 1px solid $primary;
+}
+
+.tapered-rule{
+    margin: 1rem 0;
 }

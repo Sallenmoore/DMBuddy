@@ -3,6 +3,7 @@ import os
 # from models import Model
 from autonomous.assets import build_assets
 from config import DevelopmentConfig
+import filters
 from flask import Flask
 
 from views.admin import admin_page
@@ -16,7 +17,7 @@ def create_app():
     #################################################################
     #                             Filters                           #
     #################################################################
-    # app.jinja_env.filters['datetime_format'] = datefilters.datetime_format
+    app.jinja_env.filters["slug"] = filters.slug
 
     #################################################################
     #                             Extensions                        #

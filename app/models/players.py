@@ -67,7 +67,7 @@ class Player(AutoModel):
         self.parseinfo(**data)
 
     def statblock(self):
-        snippet = get_template_attribute("macros/_widgets.html", "pcstatblock")
+        snippet = get_template_attribute("macros/_statblocks.html", "pcstatblock")
         return snippet(self.serialize())
 
     def save(self):

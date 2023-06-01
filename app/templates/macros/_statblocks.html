@@ -1,0 +1,341 @@
+{% macro mobstatblock(info, type="player") -%}
+<div class="row statblock is-vertical mobcard" data-pk="{{info['pk']}}">
+    <div class="column">
+        <h1>{{info['name']}}</h1>
+        <button class="button is-small add-mob-initiative">Add to Initiative</button>
+        <p style="font-style: italic;">{{info['desc']}}</p>
+    </div>
+    <div class="column">
+        <div class="row has-spacing">
+            <div class="column is-one-quarter">
+                <div class="image">
+                    <img src="{{info['image']}}" />
+                </div>
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <div class="top-stats">
+                    <ul>
+                        <li>
+                            <span class="stat">Armor Class</span> {{info['armor_class']}}
+                        </li>
+                        <li>
+                            <span class="stat">Hit Points</span> {{info['hit_points']}}
+                        </li>
+                        <li>
+                            <span class="stat">Speed</span>
+                            <ul>
+                                {% for k,v in info['speed'].items() %}
+                                <li>{{k}}: {{v}} </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <div class="row">
+                        <div class="column is-4">
+                            <p class="stat">STR</p>
+                            <p>{{info['strength']}}</p>
+                        </div> <!-- ability strength -->
+                        <div class="column is-4">
+                            <p class="stat">DEX</p>
+                            <p>{{info['dexterity']}}</p>
+                        </div> <!-- ability dexterity -->
+                        <div class="column is-4">
+                            <p class="stat">CON</p>
+                            <p>{{info['constitution']}}</p>
+                        </div> <!-- ability constitution -->
+                        <div class="column is-4">
+                            <p class="stat">INT</p>
+                            <p>{{info['intelligence']}}</p>
+                        </div> <!-- ability intelligence -->
+                        <div class="column is-4">
+                            <p class="stat">WIS</p>
+                            <p>{{info['wisdom']}}</p>
+                        </div> <!-- ability wisdom -->
+                        <div class="column is-4">
+                            <p class="stat">CHA</p>
+                            <p>{{info['charisma']}}</p>
+                        </div> <!-- ability charisma -->
+                    </div> <!-- abilities -->
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <ul>
+                        {% if info['resistance'] %}
+                        <li>
+                            <span class="stat">Damage Immunities</span>
+                            {{info['damage_immunities'] }}
+                        </li>
+                        {% endif %}
+                        {% if info['condition_immunities'] %}
+                        <li>
+                            <span class="stat">Condition Immunities</span>
+                            {{info['condition_immunities']}}
+                        </li>
+                        <li>
+                            <span class="stat">Senses</span>
+                            {{info['senses']}}
+                        </li>
+                        {% endif %}
+                        {% if info['languages'] %}
+                        <li>
+                            <span class="stat">Languages</span>
+                            {{info['languages']}}
+                        </li>
+                        {% endif %}
+                        {% if info['challenge_rating'] %}
+                        <li>
+                            <span class="stat">Challenge</span>
+                            {{info['challenge_rating']}}
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <ul>
+                    {% for trait in info['traits'] %}
+                    <li>
+                        <span class="stat">{{trait['title']}}</span> {{trait['description']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div> <!-- section left -->
+            <!-- section left -->
+            <div class="column">
+                {% if info['actions'] %}
+                <h3>Actions</h3>
+                <ul>
+                    {% for action in info['actions'] %}
+                    <li>
+                        <span class="stat">{{action['name']}}</span>
+                        {{action['desc']}}
+                        <hr>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if info['reactions'] %}
+                <h3>Reactions</h3>
+                <ul>
+                    {% for action in info['reactions'] %}
+                    <li>
+                        <span class="stat">{{action['name']}}</span>
+                        {{action['desc']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if info['special_abilities'] %}
+                <h3>Special Abilities</h3>
+                <ul>
+                    {% for sp in info['special_abilities'] %}
+                    <li>
+                        <span class="stat">{{sp['name']}}</span> {{sp['desc']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if info['legendary_actions'] %}
+                <h4>Legendary Actions</h4>
+                <ul>
+                    {% for sp in info['legendary_actions'] %}
+                    <li>
+                        <span class="stat">{{sp['name']}}</span> {{sp['desc']}}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro pcstatblock(info, type="player") -%}
+<div class="row statblock is-vertical" data-pk="{{info['pk']}}">
+    <div class="column">
+        <h1>{{info['name']}}</h1>
+        <p style="font-style: italic;">{{info['desc']}}</p>
+    </div>
+    <div class="column">
+        <div class="row has-spacing">
+            <div class="column is-3">
+                <div class="image is-rounded-tile" style="padding-bottom:1rem;">
+                    <img src="{{info['image']}}" />
+                </div>
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <div class="row">
+                    <div class="column is-shrink">
+                        <p class="stat">STR</p>
+                        <p>{{info['str']}}</p>
+                    </div> <!-- ability strength -->
+                    <div class="column is-shrink">
+                        <p class="stat">DEX</p>
+                        <p>{{info['dex']}}</p>
+                    </div> <!-- ability dexterity -->
+                    <div class="column is-shrink">
+                        <p class="stat">CON</p>
+                        <p>{{info['con']}}</p>
+                    </div> <!-- ability constitution -->
+                    <div class="column is-shrink">
+                        <p class="stat">INT</p>
+                        <p>{{info['int']}}</p>
+                    </div> <!-- ability intelligence -->
+                    <div class="column is-shrink">
+                        <p class="stat">WIS</p>
+                        <p>{{info['wis']}}</p>
+                    </div> <!-- ability wisdom -->
+                    <div class="column is-shrink">
+                        <p class="stat">CHA</p>
+                        <p>{{info['cha']}}</p>
+                    </div> <!-- ability charisma --><!-- abilities -->
+                </div>
+            </div>
+            <div class="column is-3">
+                <div class="top-stats">
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <ul>
+                        <li>
+                            <span class="stat">Race</span> {{info['race']}}
+                        </li>
+                        <li>
+                            <span class="stat">Armor Class</span> {{info['ac']}}
+                        </li>
+                        <li>
+                            <span class="stat">Hit Points</span> {{info['hp']}}
+                        </li>
+                        <li>
+                            <span class="stat">Speed</span>
+                            <ul>
+                                {% for k,v in info['speed'].items() %}
+                                <li>{{k}}: {{v}} </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="stat">Money</span>
+                            <ul>
+                                {% for k,v in info['wealth'].items() %}
+                                <li>{{k}}: {{v}} </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="column">
+                {% if info['resistance'] %}
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h3>Resistances and Immunities</h3>
+                <ul>
+                    {% for r in info['resistance'] %}
+                    <li>
+                        {{r}}
+                    </li>
+                    {%endfor %}
+                </ul>
+                {% endif %}
+                {% if info['inventory'] %}
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h3>Inventory</h3>
+                <div class="row">
+                    <div class="column is-full">
+                        <div class="is-select">
+                            <select class="inventory-select">
+                                <option value="">
+                                    --- Select an Item ---
+                                </option>
+                                {% for r in info['inventory'] %}
+                                <option value="inventory-{{r.get('name')|slug}}">
+                                    {{r.get("name")}}
+                                </option>
+                                {%endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="column">
+                        {% for r in info['inventory'] %}
+                        <div class="item-description is-hidden panel" id="inventory-{{r.get('name')|slug}}">
+                            {{r.get("description")|safe}}
+                        </div>
+                        {%endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if info['features'] %}
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h3>Actions and Features</h3>
+                <div class="row">
+                    <div class="column is-full">
+                        <div class="is-select">
+                            <select class="feature-select">
+                                <option value="">
+                                    --- Select an Item ---
+                                </option>
+                                {% for k in info['features'] %}
+                                <option value="feature-{{k|slug}}">
+                                    {{k}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column">
+                        {% for k, v in info['features'].items() %}
+                        <div class="feature-description is-hidden panel" id="feature-{{k|slug}}">
+                            {{v|safe}}
+                        </div>
+                        {%endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if info['spells'] %}
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h3>Spells</h3>
+                <div class="row">
+                    <div class="column is-full">
+                        <div class="is-select">
+                            <select class="spell-select">
+                                <option value="">
+                                    --- Select an Item ---
+                                </option>
+                                {% for k in info['spells'] %}
+                                <option value="spell-{{k|slug}}">
+                                    {{k}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column">
+                        {% for k, v in info['spells'].items() %}
+                        <div class="spell-description is-hidden panel" id="spell-{{k|slug}}">
+                            {{v|safe}}
+                        </div>
+                        {%endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}

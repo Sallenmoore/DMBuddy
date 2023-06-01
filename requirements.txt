@@ -4,7 +4,7 @@
 
 ##### Frameworks #####
 --extra-index-url https://test.pypi.org/simple/
-autonomous == 0.0.84
+autonomous == 0.0.90
 
 ##### Configuration and Documentation #####
 
@@ -41,7 +41,7 @@ dateparser
 
 ##### Utility #####
 
-DungeonGenerator #https://pypi.org/project/DungeonGenerator/
+d20
 
 ##################################
 #           DEVELOPMENT          #

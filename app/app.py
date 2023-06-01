@@ -18,6 +18,8 @@ def create_app():
     #                             Filters                           #
     #################################################################
     app.jinja_env.filters["slug"] = filters.slug
+    app.jinja_env.filters["basename"] = filters.basename
+    app.jinja_env.filters["flattenlistvalues"] = filters.flattenlistvalues
 
     #################################################################
     #                             Extensions                        #

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% import 'macros/_nav.html' as nav with context %}
+{% import 'macros/_widgets.html' as widgets with context %}
+
+{% block content %}
+
+{{ nav.fullnav() }}
+
+<div class="row">
+    <div class="column is-5 dmpanel" id="reference-panel">
+        <h2> Reference </h2>
+        <div class="row is-vertical">
+            <div class="column is-shrink">
+                <form id="search-category">
+                    <label>Category</label>
+                    <div class="is-select">
+                        <select name="category" id="category">
+                            <option value="monsters" {% if category=="monsters" %} selected {% endif %}>
+                                Monsters
+                            </option>
+                            <option value="items" {% if category=="items" %} selected {% endif %}>
+                                Items
+                            </option>
+                            <option value="spells" {% if category=="spells" %} selected {% endif %}>
+                                Spells
+                            </option>
+                            <option value="npcs" {% if category=="npcs" %} selected {% endif %}>
+                                NPCs
+                            </option>
+                            <option value="shops" {% if category=="shops" %} selected {% endif %}>
+                                Shops
+                            </option>
+                            <option value="encounters" {% if category=="encounters" %} selected {% endif %}>
+                                Encounters
+                            </option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="column">
+                <label>filter</label>
+                <input name="search" id="search" type="text">
+            </div>
+            <div class="column is-full {%if category != 'npc'%} is-hidden {% endif %}">
+                <h2> NPC Generator </h2>
+                <div class="row">
+                    <div class="column">
+                        <button class="button is-primary" id="npcgen">Generate</button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary" id="npcsave">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full {%if category != 'encounter'%} is-hidden {% endif %}">
+                <h2> Encounter Generator </h2>
+                <div class="row">
+                    <div class="column">
+                        <button class="button is-primary" id="encountergen">Generate</button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary" id="encountersave">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full {%if category != 'shop'%} is-hidden {% endif %}">
+                <h2> Shop Generator </h2>
+                <div class="row">
+                    <div class="column">
+                        <button class="button is-primary" id="shopgen">Generate</button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-primary" id="shopsave">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full" id="reference-list">
+                <h2> {{ category | title }} List </h2>
+                <div class="accordion">
+                    <ul class="accordion__list">
+                        {% for item in referencelist %}
+                        <li class="accordion__item referencelist-item" data-pk="{{item.pk}}">
+                            <a href="#" class="accordion__title">{{item.name}}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column dmdetail" id="reference-detail">
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block jsinclude %}
+<script type="module" src="{{ url_for('static', filename='js/reference.min.js') }}"></script>
+{% endblock %}

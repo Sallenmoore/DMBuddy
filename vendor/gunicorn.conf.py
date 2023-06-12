@@ -22,4 +22,6 @@ capture_output = True
 
 # How verbose the Gunicorn error logs should be
 reload = True
-reload_extra_files = ["templates/"] + glob("static/**/*", recursive=True)
+reload_extra_files = glob("templates/**/*", recursive=True) + glob(
+    "static/**/*", recursive=True
+)

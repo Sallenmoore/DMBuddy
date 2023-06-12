@@ -1,4 +1,4 @@
-{% macro mobstatblock(info, type="player") -%}
+{% macro mobstatblock(info) -%}
 <div class="row statblock is-vertical mobcard" data-pk="{{info['pk']}}">
     <div class="column">
         <h1>{{info['name']}}</h1>
@@ -8,9 +8,11 @@
     <div class="column">
         <div class="row has-spacing">
             <div class="column is-one-quarter">
+                {% if info.get('image') %}
                 <div class="image">
-                    <img src="{{info['image']}}" />
+                    <img src="{{info['image']['url']}}" />
                 </div>
+                {% endif %}
                 <svg height="5" width="100%" class="tapered-rule">
                     <polyline points="0,0 400,2.5 0,5"></polyline>
                 </svg>
@@ -156,8 +158,8 @@
 </div>
 {%- endmacro %}
 
-{% macro pcstatblock(info, type="player") -%}
-<div class="row statblock is-vertical" data-pk="{{info['pk']}}">
+{% macro pcstatblock(info) -%}
+<div class="row statblock is-vertical pccard" data-pk="{{info['pk']}}">
     <div class="column">
         <h1>{{info['name']}}</h1>
         <p style="font-style: italic;">{{info['desc']}}</p>
@@ -166,7 +168,7 @@
         <div class="row has-spacing">
             <div class="column is-3">
                 <div class="image is-rounded-tile" style="padding-bottom:1rem;">
-                    <img src="{{info['image']}}" />
+                    <img src="{{info['image']['url']}}" />
                 </div>
                 <svg height="5" width="100%" class="tapered-rule">
                     <polyline points="0,0 400,2.5 0,5"></polyline>
@@ -335,6 +337,147 @@
                     {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro itemstatblock(info) -%}
+<div class="row statblock is-vertical itemcard" data-pk="{{info['pk']}}">
+    <div class="column">
+        <h1>{{info['name']}}</h1>
+        <p style="font-style: italic;">{{info['desc']}}</p>
+    </div>
+    <div class="column">
+        <div class="row has-spacing">
+            <div class="column is-one-quarter">
+                <div class="image">
+                    <img src="{{info['image']['url']}}" />
+                </div>
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h3>Properties</h3>
+                TBD
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro spellstatblock(info) -%}
+<div class="row statblock is-vertical spellcard" data-pk="{{info['pk']}}">
+    <div class="column">
+        <h1>{{info['name']}}</h1>
+        <p style="font-style: italic;">{{info['desc']}}</p>
+    </div>
+    <div class="column">
+        <div class="row has-spacing">
+            <div class="column is-one-quarter">
+                <div class="image">
+                    <img src="{{info['image']['url']}}" />
+                </div>
+                <svg height="5" width="100%" class="tapered-rule">
+                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                </svg>
+                <h3>Properties</h3>
+                TBD
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro npcstatblock(info) -%}
+<div class="row statblock npccard" data-pk="{{info['pk']}}">
+    <div class="column">
+        <h1>{{info['name']}}</h1>
+        <p style="font-style: italic;">{{info['backstory']}}</p>
+    </div>
+    <div class="column is-one-third">
+        <div class="image">
+            <img src="{{info['image']['url']}}" />
+        </div>
+    </div>
+    <div class="column">
+        <div class="top-stats">
+            <div class="row">
+                <div class="column is-4">
+                    <p class="stat">STR</p>
+                    <p>{{info['stats']['strength']}}</p>
+                </div> <!-- ability strength -->
+                <div class="column is-4">
+                    <p class="stat">DEX</p>
+                    <p>{{info['stats']['dexterity']}}</p>
+                </div> <!-- ability dexterity -->
+                <div class="column is-4">
+                    <p class="stat">CON</p>
+                    <p>{{info['stats']['constitution']}}</p>
+                </div> <!-- ability constitution -->
+                <div class="column is-4">
+                    <p class="stat">INT</p>
+                    <p>{{info['stats']['intelligence']}}</p>
+                </div> <!-- ability intelligence -->
+                <div class="column is-4">
+                    <p class="stat">WIS</p>
+                    <p>{{info['stats']['wisdom']}}</p>
+                </div> <!-- ability wisdom -->
+                <div class="column is-4">
+                    <p class="stat">CHA</p>
+                    <p>{{info['stats']['charisma']}}</p>
+                </div> <!-- ability charisma -->
+            </div> <!-- abilities -->
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro shopstatblock(info) -%}
+<div class="panel">
+    <div class="row shopcard" data-pk="{{info['pk']}}">
+        <div class="column">
+            <div class="image circle">
+                <img src="{{info['image']['url']}}" />
+            </div>
+            <h1>{{info['name']}}</h1>
+            <p style="font-style: italic;">{{info['shoptype']}}</p>
+            <p>Proprietor : {{info['owner']}}</p>
+            <ul>
+                {% for item, price in info['inventory'].items() %}
+                <li>
+                    {{item}}</span>:{{price}}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro encounterstatblock(info) -%}
+<div class="panel">
+    <div class="row is-vertical encountercard" data-pk="{{info['pk']}}">
+        <div class="column">
+            <h1>Combatants</h1>
+            <ul>
+                {% for combatant in info['enemies'] %}
+                <li>{{combatant}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="column">
+            <h3>Loot</h3>
+            <ul>
+                {% for loot in info['loot'] %}
+                <li>{{loot}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="column">
+            <h3>Notes</h3>
+            <textarea id="encounter-notes">
+            {{info.get('notes', '')}}
+        </textarea>
         </div>
     </div>
 </div>

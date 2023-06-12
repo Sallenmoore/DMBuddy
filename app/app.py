@@ -1,7 +1,7 @@
 import os
 
 # from models import Model
-from autonomous.assets import build_assets
+from autonomous.assets import build_assets, javascript
 from config import DevelopmentConfig
 import filters
 from flask import Flask
@@ -25,7 +25,12 @@ def create_app():
     #                             Extensions                        #
     #################################################################
 
-    app.before_request(lambda: build_assets())
+    def compile_assets():
+        build_assets()
+        jsfiles = ["maps", "dmnotes", "initiative", "players", "reference"]
+        javascript(files=jsfiles, path="static/js")
+
+    app.before_request(lambda: compile_assets())
 
     #################################################################
     #                             ROUTES                            #

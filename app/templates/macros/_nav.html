@@ -22,27 +22,27 @@
       <div class="top__links is-end">
         <ul id="nav_links">
           <li>
-            <a data-target="map">
+            <a href="{{url_for('.map')}}">
               <iconify-icon icon="uiw:map"></iconify-icon>
             </a>
           </li>
           <li>
-            <a data-target="initiative">
-              <iconify-icon icon="mdi:sword-fight"></iconify-icon>
-            </a>
-          </li>
-          <li i>
-            <a data-target="reference">
+            <a href="{{url_for('.reference')}}">
               <iconify-icon icon="zondicons:book-reference"></iconify-icon>
             </a>
           </li>
           <li>
-            <a data-target="players">
+            <a href="{{url_for('.initiative')}}">
+              <iconify-icon icon="mdi:sword-fight"></iconify-icon>
+            </a>
+          </li>
+          <li>
+            <a href="{{url_for('.players')}}">
               <iconify-icon icon="game-icons:tabletop-players"></iconify-icon>
             </a>
           </li>
           <li>
-            <a data-target="dmnotes">
+            <a href="{{url_for('.dmnotes')}}">
               <iconify-icon icon="game-icons:spell-book"></iconify-icon>
             </a>
           </li>

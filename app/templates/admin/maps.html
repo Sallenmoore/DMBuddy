@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% import 'macros/_nav.html' as nav with context %}
+
+{% block title %}Maps{% endblock %}
+
+{% block content %}
+
+{{ nav.fullnav() }}
+
+<h2>Maps</h2>
+<div class="row">
+    <div class="column dmdetail" id="map-detail">
+        <div class="row">
+            <div class="column">
+                <div class="row">
+                    <div class="column is-shrink">
+                        <div class="is-slider">
+                            <input type="range" min="30" max="150" step="10" id="map-gridsize">
+                        </div>
+                        <button class="button" id="map-grid">Toggle Grid</button>
+                        <button class="button" id="map-reset-fog">Reset Fog</button>
+                        <button class="button" id="map-clear-fog">Clear Fog</button>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="is-select">
+                    <select id="map-list">
+                        {% for map in map_entries %}
+                        <option value="{{map}}">
+                            {{ map | basename }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="column is-shrink">
+                <form method="post" target="{{url_for('admin.map')}}" id="add-map-form" enctype="multipart/form-data">
+                    <div class="is-file-input">
+                        <input type="file" id="map-file" name="map-file">
+                        <label for="map-file" class="button is-primary">
+                            <span>Upload New Map</span>
+                            <span class="icon">
+                                <iconify-icon icon="uiw:map"></iconify-icon>
+                            </span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="column dmpanel" id="map-panel">
+        <div id="map-container">
+            <div class="is-hidden" id="map-grid-overlay"></div>
+            <img id="map-image" src="/static/images/maps/chichingia.png" alt="Map Image">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block jsinclude %}
+<script type="module" src="{{ url_for('static', filename='js/maps.min.js') }}"></script>
+{% endblock %}

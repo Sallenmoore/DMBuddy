@@ -1,4 +1,4 @@
-# Dungeon Arena
+# DM Buddy
 
 ---
 

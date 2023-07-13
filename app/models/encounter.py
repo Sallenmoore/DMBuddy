@@ -1,39 +1,49 @@
-from autonomous.model.automodel import AutoModel
 from autonomous import log
-import requests
+from autonomous import AutoModel
 
 
 class Encounter(AutoModel):
     attributes = {
-        "characters": [],
-        "started": None,
-        "completed": None,
+        "characters": [
+            {
+                "type": "player",
+                "order": 0,
+                "character": None,
+                "actions": [],
+                "hp": 0,
+                "status": ["active"],  # "active" | "dead" | "grappled" | etc
+            }
+        ],
+        "completed": False,
         "round": 0,
         "difficulty": "",
         "loot": [],
         "rolls": [],
     }
 
-    def __init__(self, **kwargs):
-        pass
+    def addcharacter(self, character):
+        ch_type = "npc"
+        if not character.npc:
+            ch_type = "player"
+        elif character.__class__.__name__.lower() == "monster":
+            ch_type = "monster"
 
-    def save(self):
-        super().save()
+        self.characters.append(
+            {
+                "type": ch_type,
+                "character": character,
+                "order": len(self.characters),
+                "actions": [],
+                "hp": character.hp,
+                "status": ["active"],
+            }
+        )
 
     def players(self):
-        return [
-            i["player"]
-            for i in self.characters
-            if "player" in i or i["type"] == "player"
-        ]
+        return [i for i in self.characters if not i["type"] == "player"]
+
+    def allies(self):
+        return [i for i in self.characters if i["type"] == "npc"]
 
     def monsters(self):
-        return [
-            i["enemy"] for i in self.characters if "enemy" in i or i["type"] == "enemy"
-        ]
-
-    def ordered(self):
-        filtered_objs = filter(lambda s: s.get("initiative_order"), self.characters)
-        sorted_objs = sorted(filtered_objs, key=lambda x: x.get("initiative_order"))
-        initiative = [item.get("player", item.get("monster")) for item in sorted_objs]
-        return initiative
+        return [i for i in self.characters if i["type"] == "monster"]

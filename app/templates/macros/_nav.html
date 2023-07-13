@@ -19,37 +19,57 @@
           </div>
         </div>
       </div>
-      <div class="top__links is-end">
-        <ul id="nav_links">
-          <li>
-            <a href="{{url_for('.map')}}">
-              <iconify-icon icon="uiw:map"></iconify-icon>
-            </a>
-          </li>
-          <li>
-            <a href="{{url_for('.reference')}}">
-              <iconify-icon icon="zondicons:book-reference"></iconify-icon>
-            </a>
-          </li>
-          <li>
-            <a href="{{url_for('.initiative')}}">
-              <iconify-icon icon="mdi:sword-fight"></iconify-icon>
-            </a>
-          </li>
-          <li>
-            <a href="{{url_for('.players')}}">
-              <iconify-icon icon="game-icons:tabletop-players"></iconify-icon>
-            </a>
-          </li>
-          <li>
-            <a href="{{url_for('.dmnotes')}}">
-              <iconify-icon icon="game-icons:spell-book"></iconify-icon>
-            </a>
-          </li>
-        </ul>
-      </div>
     </nav>
   </div>
+  <div class="hero__content">
+    <h2> Quick Reference </h2>
+    <div class="row">
+      <div class="column is-shrink">
+        <form id="reference-search">
+
+          <label>Category</label>
+          <div class="is-select">
+            <select name="category" id="category">
+              <option value="monsters" {% if category=="monsters" %} selected {% endif %}>
+                Monsters
+              </option>
+              <option value="items" {% if category=="items" %} selected {% endif %}>
+                Items
+              </option>
+              <option value="spells" {% if category=="spells" %} selected {% endif %}>
+                Spells
+              </option>
+              <option value="characters" {% if category=="characters" %} selected {% endif %}>
+                Players
+              </option>
+              <option value="shops" {% if category=="shops" %} selected {% endif %}>
+                Players
+              </option>
+            </select>
+          </div>
+
+          <label>Search</label>
+          <input name="search" id="search-input" type="text">
+        </form>
+      </div>
+      <div class="column has-bg-light is-shrink is-stretch">
+      </div>
+      <div class="column is-shrink">
+        <div class="accordion">
+          <ul class="accordion__list" id="search-results">
+            {% for item in results %}
+            <li class="accordion__item search-result" data-pk="{{item.pk}}">
+              <a href="#" class="accordion__title" data-pk="{{item.name}}">{{item.name}}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="column dmdetail" id="reference-detail">
+    </div>
+  </div>
+</div>
 </div>
 
 {%- endmacro %}

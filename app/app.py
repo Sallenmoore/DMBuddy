@@ -6,7 +6,6 @@ from config import DevelopmentConfig
 import filters
 from flask import Flask
 
-from views.admin import admin_page
 from views.index import index_page
 
 
@@ -27,8 +26,6 @@ def create_app():
 
     def compile_assets():
         build_assets()
-        jsfiles = ["maps", "dmnotes", "initiative", "players", "reference"]
-        javascript(files=jsfiles, path="static/js")
 
     app.before_request(lambda: compile_assets())
 
@@ -40,5 +37,4 @@ def create_app():
     #           Blueprints               #
     ######################################
     app.register_blueprint(index_page)
-    app.register_blueprint(admin_page, url_prefix="/admin")
     return app

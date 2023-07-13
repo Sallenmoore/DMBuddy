@@ -6,20 +6,12 @@ all: test clean run start
 APP_NAME?=dmbuddy
 CONTAINERS=$$(sudo docker ps -a -q)
 
-###### Database #######
-
-create-network:
-	if [ -z "$$(docker network ls --filter name=app_net | grep -w app_net)" ]; then \
-		docker network create app_net; \
-	fi
-
 ###### BUILD and RUN #######
 build:
 	docker-compose build --no-cache
 
-run: create-network 
+run:
 	docker-compose up --build -d
-	docker logs -f --since=5m -t $(APP_NAME)
 
 ###### CLEANING #######
 

@@ -3,8 +3,8 @@
 ##################################
 
 ##### Frameworks #####
---extra-index-url https://test.pypi.org/simple/
-autonomous == 0.0.97
+dmtoolkit >= 0.0.6
+autonomous-app >= 0.1.2
 
 ##### Configuration and Documentation #####
 
@@ -38,6 +38,7 @@ gunicorn
 ##### Parsing #####
 
 dateparser
+markdown
 
 ##### Utility #####
 

@@ -1,27 +1,51 @@
 {% extends "base.html" %}
 {% import 'macros/_nav.html' as nav with context %}
-{% import 'macros/_widgets.html' as widgets with context %}
 
 {% block content %}
 
 {{ nav.fullnav() }}
+
 <div class="section">
+    <div class="tabs">
+        <ul class="tabs__list has-centered">
+            <li class="is-active">
+                <a>
+                    <iconify-icon icon="ph:person-fill"></iconify-icon>
+                    NPC Generator
+                </a>
+            </li>
+            <li>
+                <a>
+                    <iconify-icon icon="ant-design:shop-filled"></iconify-icon>
+                    Shop Generator
+                </a>
+            </li>
+            <li>
+                <a>
+                    <iconify-icon icon="mdi:sword-fight"></iconify-icon>
+                    Encounter Generator
+                </a>
+            </li>
+        </ul>
+    </div>
     <div class="row">
-        <div class="column is-3">
-            <div class="row is-vertical">
-                <div class="column">
-                    <input type="text" id="pc_id" name="pc_id" placeholder="DnDBeyond ID#">
-                </div>
-                <div class="column">
-                    <button class="button" id="pc_add">Add Player</button>
-                </div>
+        <div class="column is-full">
+            <div class="panel">
+                <h2>NPC Generator</h2>
+                **In Progress**
             </div>
         </div>
-        <div class="column">
-            <h2> Details View</h2>
+        <div class="column is-full is-hidden">
+            <div class="panel">
+                <h2>Shop Generator</h2>
+                **In Progress**
+            </div>
         </div>
-        <div class="column is-3">
-
+        <div class="column is-full is-hidden">
+            <div class="panel">
+                <h2>Encounter Generator</h2>
+                **In Progress**
+            </div>
         </div>
     </div>
 </div>

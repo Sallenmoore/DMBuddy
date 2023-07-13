@@ -162,7 +162,7 @@
 <div class="row statblock is-vertical pccard" data-pk="{{info['pk']}}">
     <div class="column">
         <h1>{{info['name']}}</h1>
-        <p style="font-style: italic;">{{info['desc']}}</p>
+        <p style="font-style: italic;">{{info['desc'] | safe}}</p>
     </div>
     <div class="column">
         <div class="row has-spacing">
@@ -216,6 +216,9 @@
                             <span class="stat">Hit Points</span> {{info['hp']}}
                         </li>
                         <li>
+                            <span class="stat">Passive Perception</span> {{info['wis'] + 10}}
+                        </li>
+                        <li>
                             <span class="stat">Speed</span>
                             <ul>
                                 {% for k,v in info['speed'].items() %}
@@ -241,7 +244,7 @@
                 </svg>
                 <h3>Resistances and Immunities</h3>
                 <ul>
-                    {% for r in info['resistance'] %}
+                    {% for r in info['resistances'] %}
                     <li>
                         {{r}}
                     </li>
@@ -257,9 +260,7 @@
                     <div class="column is-full">
                         <div class="is-select">
                             <select class="inventory-select">
-                                <option value="">
-                                    --- Select an Item ---
-                                </option>
+                                <option value=""></option>
                                 {% for r in info['inventory'] %}
                                 <option value="inventory-{{r.get('name')|slug}}">
                                     {{r.get("name")}}
@@ -287,9 +288,7 @@
                     <div class="column is-full">
                         <div class="is-select">
                             <select class="feature-select">
-                                <option value="">
-                                    --- Select an Item ---
-                                </option>
+                                <option value=""></option>
                                 {% for k in info['features'] %}
                                 <option value="feature-{{k|slug}}">
                                     {{k}}
@@ -316,9 +315,7 @@
                     <div class="column is-full">
                         <div class="is-select">
                             <select class="spell-select">
-                                <option value="">
-                                    --- Select an Item ---
-                                </option>
+                                <option value=""></option>
                                 {% for k in info['spells'] %}
                                 <option value="spell-{{k|slug}}">
                                     {{k}}
@@ -345,20 +342,30 @@
 {% macro itemstatblock(info) -%}
 <div class="row statblock is-vertical itemcard" data-pk="{{info['pk']}}">
     <div class="column">
-        <h1>{{info['name']}}</h1>
-        <p style="font-style: italic;">{{info['desc']}}</p>
+        <input class="item-details has-text-dark" type="text" name="name" id="item-name" value="{{info['name']}}">
     </div>
     <div class="column">
-        <div class="row has-spacing">
-            <div class="column is-one-quarter">
-                <div class="image">
-                    <img src="{{info['image']['url']}}" />
-                </div>
-                <svg height="5" width="100%" class="tapered-rule">
-                    <polyline points="0,0 400,2.5 0,5"></polyline>
-                </svg>
-                <h3>Properties</h3>
-                TBD
+        <label>Description</label>
+        <div class="item-details" id="item-desc" contenteditable>{{info['desc'] | safe}}</div>
+    </div>
+    <div class="column">
+        <div class="image">
+            <img src="{{info['image']['url']}}" />
+        </div>
+        <div class="row">
+            <div class="column">
+                <button id="api-item-update" class="button is-primary">Update from API</button>
+            </div>
+            <div class="column">
+                <button id="get-item-image" class="button is-primary">Get New Image</button>
+            </div>
+            <div class="column">
+                <label>Image ID</label>
+                <input class="item-details has-text-dark" type="url" name="image-id" id="image-id"
+                    value="{{info['image']['id']}}">
+                <label>Image URL</label>
+                <input class="item-details has-text-dark" type="url" name="image-url" id="image-url"
+                    value="{{info['image']['url']}}">
             </div>
         </div>
     </div>
@@ -369,21 +376,34 @@
 <div class="row statblock is-vertical spellcard" data-pk="{{info['pk']}}">
     <div class="column">
         <h1>{{info['name']}}</h1>
-        <p style="font-style: italic;">{{info['desc']}}</p>
+        <div class="image">
+            <img src="{{info['image']['url']}}" />
+        </div>
     </div>
     <div class="column">
-        <div class="row has-spacing">
-            <div class="column is-one-quarter">
-                <div class="image">
-                    <img src="{{info['image']['url']}}" />
-                </div>
-                <svg height="5" width="100%" class="tapered-rule">
-                    <polyline points="0,0 400,2.5 0,5"></polyline>
-                </svg>
-                <h3>Properties</h3>
-                TBD
-            </div>
+        <div class="top-stats">
+            <ul>
+                <li>
+                    <span class="stat">Range</span> {{info['range']}}
+                </li>
+                <li>
+                    <span class="stat">Concentration</span> {{info['concentration']}}
+                </li>
+                <li>
+                    <span class="stat">Casting Time</span> {{info['casting_time']}}
+                </li>
+            </ul>
         </div>
+        <svg height="5" width="100%" class="tapered-rule">
+            <polyline points="0,0 400,2.5 0,5"></polyline>
+        </svg>
+        <h5> Description </h5>
+        <p style="font-style: italic;">{{info['desc']}}</p>
+        <svg height="5" width="100%" class="tapered-rule">
+            <polyline points="0,0 400,2.5 0,5"></polyline>
+        </svg>
+        <h5> Variations </h5>
+        <p style="font-style: italic;">{{info['variations']}}</p>
     </div>
 </div>
 {%- endmacro %}

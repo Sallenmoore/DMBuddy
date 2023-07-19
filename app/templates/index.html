@@ -5,49 +5,126 @@
 
 {{ nav.fullnav() }}
 
-<div class="section">
-    <div class="tabs">
-        <ul class="tabs__list has-centered">
-            <li class="is-active">
-                <a>
-                    <iconify-icon icon="ph:person-fill"></iconify-icon>
-                    NPC Generator
-                </a>
-            </li>
-            <li>
-                <a>
-                    <iconify-icon icon="ant-design:shop-filled"></iconify-icon>
-                    Shop Generator
-                </a>
-            </li>
-            <li>
-                <a>
-                    <iconify-icon icon="mdi:sword-fight"></iconify-icon>
-                    Encounter Generator
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="row">
-        <div class="column is-full">
-            <div class="panel">
-                <h2>NPC Generator</h2>
-                **In Progress**
-            </div>
-        </div>
-        <div class="column is-full is-hidden">
-            <div class="panel">
-                <h2>Shop Generator</h2>
-                **In Progress**
-            </div>
-        </div>
-        <div class="column is-full is-hidden">
-            <div class="panel">
-                <h2>Encounter Generator</h2>
-                **In Progress**
-            </div>
-        </div>
-    </div>
+<div class="tabs">
+    <ul class="tabs__list has-centered" id="tab-titles">
+        <li id="reference-tab-title">
+            <a>
+                <iconify-icon icon="ph:book-fill"></iconify-icon>
+                Reference
+            </a>
+        </li>
+        <li id="npc-tab-title">
+            <a>
+                <iconify-icon icon="ph:person-fill"></iconify-icon>
+                NPC Generator
+            </a>
+        </li>
+        <li id="shop-tab-title">
+            <a>
+                <iconify-icon icon="ant-design:shop-filled"></iconify-icon>
+                Shop Generator
+            </a>
+        </li>
+        <li id="encounter-tab-title">
+            <a>
+                <iconify-icon icon="mdi:sword-fight"></iconify-icon>
+                Encounter Generator
+            </a>
+        </li>
+    </ul>
 </div>
 
+<div class="row">
+    <div class="column">
+        <div class="row" id="generator-tabs">
+            <div class="column is-full" id="reference-tab">
+                <div class="row">
+                    <div class="column">
+                        <h2> Reference </h2>
+                        <form id="reference-search">
+                            <label>Category</label>
+                            <div class="is-select">
+                                <select name="category" id="category">
+                                    <option value="monsters" {% if category=="monsters" %} selected {% endif %}>
+                                        Monsters
+                                    </option>
+                                    <option value="items" {% if category=="items" %} selected {% endif %}>
+                                        Items
+                                    </option>
+                                    <option value="spells" {% if category=="spells" %} selected {% endif %}>
+                                        Spells
+                                    </option>
+                                    <option value="characters" {% if category=="characters" %} selected {% endif %}>
+                                        Characters
+                                    </option>
+                                    <option value="shops" {% if category=="shops" %} selected {% endif %}>
+                                        Shops
+                                    </option>
+                                </select>
+                            </div>
+                            <label>Search</label>
+                            <input name="search" id="search-input" type="text">
+                        </form>
+                    </div>
+                    <div class="column" id="search-results-container">
+                        <div class="accordion">
+                            <ul class="accordion__list" id="search-results" style>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full is-hidden" id="npc-tab">
+                <div class="panel">
+                    <div class="row">
+                        <div class="column">
+                            <h2>NPC Generator</h2>
+                            <button class="button is-primary" id="generate-npc">Generate NPC</button>
+                        </div>
+                        <div class="column" id="npc-list-container">
+                            <div class="accordion">
+                                <ul class="accordion__list" id="npc-list" style>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full is-hidden" id="shop-tab">
+                <div class="panel">
+                    <div class="row">
+                        <div class="column">
+                            <h2>Shop Generator</h2>
+                            <button class="button is-primary" id="generate-shop">Generate Shop</button>
+                        </div>
+                        <div class="column" id="shop-list-container">
+                            <div class="accordion">
+                                <ul class="accordion__list" id="shop-list" style>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-full is-hidden" id="encounter-tab">
+                <div class="panel">
+                    <div class="row">
+                        <div class="column">
+                            <h2>Encounter Generator</h2>
+                            <button class="button is-primary" id="generate-encounter">Generate Encounter</button>
+                        </div>
+                        <div class="column" id="encounter-list-container">
+                            <div class="accordion">
+                                <ul class="accordion__list" id="encounter-list" style>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column" id="statblock">
+    </div>
+</div>
 {% endblock %}

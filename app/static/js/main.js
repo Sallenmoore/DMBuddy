@@ -11,109 +11,129 @@ document.addEventListener("DOMContentLoaded", () => {
 function bindEvents() {
 
   add_id_event('search-input', 'input', dndsearch);
-  add_id_event('rebuild-db', 'click', rebuilddb);
-  add_class_event('statblock', 'click', statcard);
-  add_class_event('character-statblock', 'click', characterstatcard);
+  add_id_event('category', 'change', dndsearch);
 
+  add_id_event('nav-reference', 'click', referencetab);
+  add_id_event('reference-tab-title', 'click', referencetab);
+
+  add_id_event('nav-npc', 'click', npctab);
+  add_id_event('npc-tab-title', 'click', npctab);
+  add_id_event('generate-npc', 'click', npcgen);
+
+  add_id_event('nav-shop', 'click', shoptab);
+  add_id_event('shop-tab-title', 'click', shoptab);
+  add_id_event('generate-shop', 'click', shopgen);
+
+  add_id_event('nav-encounter', 'click', encountertab);
+  add_id_event('encounter-tab-title', 'click', encountertab);
+  add_id_event('generate-encounter', 'click', encountergen);
 }
 
-function rebuilddb() {
-  let overlay = document.createElement('div');
-  overlay.classList.add = "overlay";
-  let message = document.createElement('div');
-  message.classList.add = "spinner";
-  overlay.appendChild(message);
-  document.body.appendChild(overlay);
-  get_data("updatedb", (data) => {
-    console.log(data["results"]);
-    overlay.remove();
+function npcgen() {
+  get_data("npcs", (data) => {
+    let results = document.getElementById('statblock');
+    results.innerHTML = "";
+    if (data["results"]) {
+      let div = document.createElement('div');
+      div.innerHTML = data["results"];
+      results.appendChild(div);
+    } else {
+      results.innerHTML = "No NPCs found";
+    }
   });
 }
 
+function shopgen() {
+  console.log("shops");
+}
+
+function encountergen() {
+  console.log("encounters");
+}
+
+function tab_toggle(tabselected) {
+  let tabs = get_object_by_id("generator-tabs");
+  hide_children(tabs);
+  get_children(get_object_by_id("tab-titles")).forEach(el => {
+    el.classList.remove('is-active');
+  });
+
+  get_object_by_id(`${tabselected}-tab-title`).classList.add('is-active');
+  let panel = get_object_by_id(`${tabselected}-tab`);
+  show(panel);
+  panel.scrollIntoView({
+    block: 'start',
+    behavior: 'smooth',
+    inline: 'start'
+  });
+}
+
+function referencetab() {
+  tab_toggle('reference');
+}
+
+function npctab() {
+  tab_toggle('npc');
+}
+
+function shoptab() {
+  tab_toggle('shop');
+}
+
+function encountertab() {
+  tab_toggle('encounter');
+}
+
 function dndsearch() {
+  var results = get_object_by_id("search-results");
+  results.innerHTML = "";
   let keyword = this.value;
   if (keyword.length > 2) {
     var category = get_object_by_id("category").value;
-    var results = get_object_by_id("search-results");
-    results.innerHTML = "";
     post_data("search", { category: category, keyword: keyword }, (data) => {
+      results.innerHTML = "";
       data["results"].forEach((el) => {
-        console.log(el);
-        results.appendChild(el);
+        let new_entry = get_object_by_id("search-result-item-template").cloneNode(true);
+        new_entry.removeAttribute("id");
+        new_entry.dataset.pk = el["pk"];
+        new_entry.querySelector('a').innerHTML = el["name"];
+        console.log(new_entry);
+        results.appendChild(new_entry);
+        add_event(new_entry, 'click', statcard);
       });
     });
   }
 }
 
-function characterstatcard() {
+function statcard() {
   let pk = this.dataset.pk;
-  post_data("statblock", { pk: pk, type: "pc" }, (data) => {
-    //console.log(data);
-    let results = document.getElementById('detail-view');
+  let category = get_object_by_id("category").value;
+  post_data("statblock", { pk: pk, category: category }, (data) => {
+    let results = document.getElementById('statblock');
     results.innerHTML = "";
-    if (data["result"].length > 0) {
+    console.log(data);
+    if (data["results"]) {
       let div = document.createElement('div');
-      div.innerHTML = data["result"];
+      div.innerHTML = data["results"];
       results.appendChild(div);
     } else {
-      results.innerHTML = "No results found";
+      results.innerHTML = "No statblock found";
     }
-    add_class_event('inventory-select', 'change', () => {
-      get_objects_by_class('item-description').forEach(el => { hide(el); });
-      //console.log(this.value);
-      show(document.getElementById(this.value));
-    });
-    add_class_event('spell-select', 'change', () => {
-      get_objects_by_class('spell-description').forEach(el => { hide(el); });
-      //console.log(this.value);
-      show(document.getElementById(this.value));
-    });
-    add_class_event('monster-select', 'change', () => {
-      get_objects_by_class('feature-description').forEach(el => { hide(el); });
-      //console.log(this.value);
-      show(document.getElementById(this.value));
-    });
+    // add_class_event('inventory-select', 'change', () => {
+    //   get_objects_by_class('item-description').forEach(el => { hide(el); });
+    //   //console.log(this.value);
+    //   show(document.getElementById(this.value));
+    // });
+    // add_class_event('spell-select', 'change', () => {
+    //   get_objects_by_class('spell-description').forEach(el => { hide(el); });
+    //   //console.log(this.value);
+    //   show(document.getElementById(this.value));
+    // });
+    // add_class_event('monster-select', 'change', () => {
+    //   get_objects_by_class('feature-description').forEach(el => { hide(el); });
+    //   //console.log(this.value);
+    //   show(document.getElementById(this.value));
+    // });
   });
-}
-
-
-function statcard() {
-  var pk = this.getAttribute("data-pk");
-  var category = this.getAttribute("data-category");
-  fetch("statblock", {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    mode: "same-origin", // no-cors, *cors, same-origin
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ pk: pk, category: category.value }), // body data type must match "Content-Type" header
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      let ref_detail = document.getElementById('reference-detail');
-      ref_detail.innerHTML = data['results'];
-    })
-    .then(() => {
-
-      if (category.value == "items") {
-        console.log(category.value);
-        add_class_event('item-details', 'input', updateitem);
-      } else if (category.value == "monsters") {
-        add_class_event('monster-details', 'input', updatemonster);
-      } else if (category.value == "spells") {
-        add_class_event('spell-details', 'input', updatespell);
-      } else if (category.value == "npcs") {
-        add_class_event('npc-details', 'input', updatenpc);
-      } else if (category.value == "shops") {
-        add_class_event('shop-details', 'input', updateshop);
-      } else {
-        console.log("no category");
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
 }
 

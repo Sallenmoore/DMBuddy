@@ -26,7 +26,7 @@ def index():
 
 
 ###############################################################################################
-#                                            Reference                                        #
+#                                            Update                                      #
 ###############################################################################################
 
 
@@ -62,7 +62,7 @@ def npc():
     # pk = int(request.json.get("pk"))
     npcs = NPC.all()
     context = {
-        "shops": npcs,
+        "results": npcs,
     }
     return render_template("partials/npcs.html", **context)
 
@@ -102,26 +102,31 @@ def encounter(pk=None):
 ###############################################################################################
 @index_page.route("/search", methods=("POST",))
 def search():
-    data = {"results": ""}
+    data = {"results": []}
     category = request.json.get("category")
     keyword = request.json.get("keyword")
 
     if category == "pc":
-        data["results"] = [i.serialize() for i in NPC.search(name=keyword)]
-        data["results"] += [i.serialize() for i in Player.search(name=keyword)]
+        apis = [NPC, Player]
     if category == "monsters":
         log(category, keyword)
-        data["results"] = [i.serialize() for i in Monster.search(name=keyword)]
+        apis = [Monster]
     elif category == "spells":
-        data["results"] = [i.serialize() for i in Spell.search(name=keyword)]
+        apis = [Spell]
     elif category == "items":
-        data["results"] = [i.serialize() for i in Item.search(name=keyword)]
-    log(data)
+        apis = [Item]
+
+    for api in apis:
+        data["results"] += [i.serialize() for i in api.search(name=keyword)]
+
+    log(len(data["results"]))
+
     return data
 
 
 @index_page.route("/statblock", methods=("POST",))
 def statblock():
+    log(request.json)
     category = request.json.get("category")
     pk = int(request.json.get("pk"))
     result = None
@@ -140,5 +145,6 @@ def statblock():
     else:
         log(category, pk)
 
-    log(result)
-    return {"results": result.statblock()} if result else {"results": None}
+    log(type(result), result.name, result.statblock())
+    statblock = result.statblock()
+    return {"results": statblock} if result else {"results": None}

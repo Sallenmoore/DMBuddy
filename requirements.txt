@@ -3,7 +3,7 @@
 ##################################
 
 ##### Frameworks #####
-dmtoolkit >= 0.0.6
+dmtoolkit >= 0.0.9
 autonomous-app >= 0.1.2
 
 ##### Configuration and Documentation #####

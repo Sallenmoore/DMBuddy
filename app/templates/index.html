@@ -37,7 +37,8 @@
 <div class="row">
     <div class="column">
         <div class="row" id="generator-tabs">
-            <div class="column is-full" id="reference-tab">
+            <div class="column is-full {% if session.get('page', 'reference') != 'reference' %} is-hidden {% endif %}"
+                id="reference-tab">
                 <div class="row">
                     <div class="column">
                         <h2> Reference </h2>
@@ -74,23 +75,30 @@
                     </div>
                 </div>
             </div>
-            <div class="column is-full is-hidden" id="npc-tab">
+            <div class="column is-full {% if session['page'] != 'npc' %} is-hidden {% endif %}" id="npc-tab">
                 <div class="panel">
                     <div class="row">
                         <div class="column">
                             <h2>NPC Generator</h2>
                             <button class="button is-primary" id="generate-npc">Generate NPC</button>
                         </div>
+                        {% if npcs %}
                         <div class="column" id="npc-list-container">
                             <div class="accordion">
-                                <ul class="accordion__list" id="npc-list" style>
+                                <ul class="accordion__list" id="npc-list">
+                                    {% for npc in npcs %}
+                                    <li class="accordion__item statcard-view" data-pk="{{npc.pk}}" data-category="npc">
+                                        <a href="#" class="accordion__title">{{npc.name}}</a>
+                                    </li>
+                                    {% endfor %}
                                 </ul>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-            <div class="column is-full is-hidden" id="shop-tab">
+            <div class="column is-full {% if session['page'] != 'shop' %} is-hidden {% endif %}" id="shop-tab">
                 <div class="panel">
                     <div class="row">
                         <div class="column">
@@ -106,7 +114,8 @@
                     </div>
                 </div>
             </div>
-            <div class="column is-full is-hidden" id="encounter-tab">
+            <div class="column is-full {% if session['page'] != 'encounter' %} is-hidden {% endif %}"
+                id="encounter-tab">
                 <div class="panel">
                     <div class="row">
                         <div class="column">

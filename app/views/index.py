@@ -7,14 +7,7 @@ from models import Player, Encounter, NPC, Monster, Spell, Item, Shop
 import multiprocessing as mp
 
 # external Modules
-from flask import (
-    Blueprint,
-    render_template,
-    request,
-    session,
-    redirect,
-    url_for,
-)
+from flask import Blueprint, render_template, request, session, redirect, url_for
 import os
 
 index_page = Blueprint("index", __name__)
@@ -22,7 +15,14 @@ index_page = Blueprint("index", __name__)
 
 @index_page.route("/", methods=("GET",))
 def index():
-    return render_template("index.html")
+    context = {
+        "npcs": NPC.all(),
+        "pcs": Player.all(),
+        "shops": Shop.all(),
+        "encounters": Encounter.all(),
+    }
+    log(context)
+    return render_template("index.html", **context)
 
 
 ###############################################################################################
@@ -59,12 +59,9 @@ def updatespell():
 ###############################################################################################
 @index_page.route("/npcs", methods=("GET", "POST"))
 def npc():
-    # pk = int(request.json.get("pk"))
-    npcs = NPC.all()
-    context = {
-        "results": npcs,
-    }
-    return render_template("partials/npcs.html", **context)
+    session["page"] = "npc"
+    NPC.generate()
+    return {"results": "success"}
 
 
 ###############################################################################################
@@ -72,12 +69,8 @@ def npc():
 ###############################################################################################
 @index_page.route("/shops", methods=("GET", "POST"))
 def shop():
-    # pk = int(request.json.get("pk"))
-    shops = Shop.all()
-    context = {
-        "shops": shops,
-    }
-    return render_template("partials/shops.html", **context)
+    session["page"] = "shop"
+    return {"results": "success"}
 
 
 ###############################################################################################
@@ -87,13 +80,14 @@ def shop():
 
 @index_page.route("/encounter", methods=("GET", "POST"))
 def encounter(pk=None):
-    session["page"] = "index.encounter"
+    session["page"] = "encounter"
     if request.form.get("pk"):
         log(request.form.get("pk"))
     if pk:
         result = Encounter.get(pk)
     else:
         result = DMTools.generateencounter()
+
     return result.serialize()
 
 
@@ -102,6 +96,7 @@ def encounter(pk=None):
 ###############################################################################################
 @index_page.route("/search", methods=("POST",))
 def search():
+    session["page"] = "reference"
     data = {"results": []}
     category = request.json.get("category")
     keyword = request.json.get("keyword")
@@ -130,10 +125,10 @@ def statblock():
     category = request.json.get("category")
     pk = int(request.json.get("pk"))
     result = None
-    if category == "pc" and pk:
-        result = Player.get(pk)
+    if category == "npc" and pk:
+        result = NPC.get(pk)
         if not result:
-            result = NPC.get(pk)
+            result = Player.get(pk)
     if category == "monsters":
         result = Monster.get(pk)
     elif category == "spells":

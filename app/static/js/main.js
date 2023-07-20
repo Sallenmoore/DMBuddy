@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function bindEvents() {
 
+  add_class_event('statcard-view', 'click', statcard);
+
+
   add_id_event('search-input', 'input', dndsearch);
   add_id_event('category', 'change', dndsearch);
 
@@ -30,16 +33,17 @@ function bindEvents() {
 }
 
 function npcgen() {
+  console.log("npcs");
+  let loader = document.createElement('div');
+  loader.classList.add('is-loading');
+  this.parentNode.appendChild(loader);
   get_data("npcs", (data) => {
-    let results = document.getElementById('statblock');
-    results.innerHTML = "";
-    if (data["results"]) {
-      let div = document.createElement('div');
-      div.innerHTML = data["results"];
-      results.appendChild(div);
-    } else {
-      results.innerHTML = "No NPCs found";
-    }
+    setTimeout(() => {
+      loader.remove();
+      let results = document.getElementById('statblock');
+      results.innerHTML = "";
+      location.reload();
+    }, 30000);
   });
 }
 
@@ -107,7 +111,7 @@ function dndsearch() {
 
 function statcard() {
   let pk = this.dataset.pk;
-  let category = get_object_by_id("category").value;
+  let category = this.dataset.category;
   post_data("statblock", { pk: pk, category: category }, (data) => {
     let results = document.getElementById('statblock');
     results.innerHTML = "";

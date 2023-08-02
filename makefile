@@ -1,10 +1,13 @@
 
 .PHONY: all build run clean deepclean test tests debug
 
-all: test clean run start
+all: test clean run
 
-APP_NAME?=dmbuddy
-CONTAINERS=$$(sudo docker ps -a -q)
+include .env
+export
+
+APP_NAME?=app
+CONTAINERS=$$(sudo docker ps --filter "name=${APP_NAME}" -q)
 
 ###### BUILD and RUN #######
 build:
@@ -23,14 +26,15 @@ clean:
 deepclean: clean
 	-sudo docker container prune -f
 	-sudo docker image prune -f
+	-sudo docker network prune -f
 	-sudo docker system prune -a -f --volumes
 
 ###### TESTING #######
 
-debug: run
-	docker logs -f --since=5m -t $(APP_NAME)
+debug: clean build run
+	docker logs -f $(APP_NAME)
 
-tests: 
+tests: clean build run
 	docker-compose up --build -d
 	docker exec -it $(APP_NAME) python -m pytest --cov=app -rx -l -x --log-level=INFO --no-cov-on-fail
 

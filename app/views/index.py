@@ -1,10 +1,10 @@
 # Built-In Modules
 from autonomous import log
-
+from celery.result import AsyncResult
 from dmtoolkit import DMTools
-from models import Player, Encounter, NPC, Monster, Spell, Item, Shop
-
-import multiprocessing as mp
+from models import Player, Encounter, Monster, Spell, Item, Shop
+from models.npc import NPC
+from tasks import npcgentask, imagegentask
 
 # external Modules
 from flask import Blueprint, render_template, request, session, redirect, url_for
@@ -21,8 +21,44 @@ def index():
         "shops": Shop.all(),
         "encounters": Encounter.all(),
     }
-    log(context)
+    # log(context)
     return render_template("index.html", **context)
+
+
+###############################################################################################
+#                                            Tasks                                            #
+###############################################################################################
+
+
+@index_page.route("/task", methods=("POST",))
+def task():
+    session["page"] = "npc"
+    log(request.json)
+    if "generateNPC" in request.json:
+        log(request.json)
+        task = npcgentask.delay(**request.json.get("generateNPC"))
+        log(task.id)
+        result = {"results": task.id}
+    elif "generateImage" in request.json:
+        log(request.json)
+        task = imagegentask.delay(**request.json.get("generateImage"))
+        log(task.id)
+        result = {"results": task.id}
+    else:
+        result = "invalid task"
+    return {"results": result}
+
+
+@index_page.route("/checktask", methods=("POST",))
+def checktask():
+    log(request.json)
+    task_result = "invalid task id"
+    if "id" in request.json:
+        task = AsyncResult(request.json.get("id"))
+        task_result = {"task_id": task.id, "task_status": task.status}
+        task_result["task_result"] = task.get() if task.status == "SUCCESS" else None
+        log(**task_result)
+    return {"results": task_result}
 
 
 ###############################################################################################
@@ -57,11 +93,22 @@ def updatespell():
 ###############################################################################################
 #                                            NPC                                              #
 ###############################################################################################
-@index_page.route("/npcs", methods=("GET", "POST"))
+@index_page.route("/npc", methods=("POST",))
 def npc():
     session["page"] = "npc"
-    NPC.generate()
-    return {"results": "success"}
+    if request.json.get("pk"):
+        obj = NPC.get(request.json.get("pk"))
+        obj = obj.serialize() if obj else None
+    else:
+        obj = [npc.serialize() for npc in NPC.all()]
+
+    return {"results": obj}
+
+
+# @index_page.route("/npcgen", methods=("POST",))
+# def npcgen():
+#     task = NPC.generate()
+#     return {"results": task.id}
 
 
 ###############################################################################################
@@ -85,9 +132,6 @@ def encounter(pk=None):
         log(request.form.get("pk"))
     if pk:
         result = Encounter.get(pk)
-    else:
-        result = DMTools.generateencounter()
-
     return result.serialize()
 
 
@@ -125,17 +169,18 @@ def statblock():
     category = request.json.get("category")
     pk = int(request.json.get("pk"))
     result = None
+    log(category, pk)
     if category == "npc" and pk:
         result = NPC.get(pk)
         if not result:
             result = Player.get(pk)
-    if category == "monsters":
+    elif category == "monsters" and pk:
         result = Monster.get(pk)
-    elif category == "spells":
+    elif category == "spells" and pk:
         result = Spell.get(pk)
-    elif category == "items":
+    elif category == "items" and pk:
         result = Item.get(pk)
-    elif category == "shop":
+    elif category == "shop" and pk:
         result = Shop.get(pk=pk)
     else:
         log(category, pk)
@@ -143,3 +188,30 @@ def statblock():
     log(type(result), result.name, result.statblock())
     statblock = result.statblock()
     return {"results": statblock} if result else {"results": None}
+
+
+@index_page.route("/delete", methods=("POST",))
+def delete():
+    log(request.json)
+    category = request.json.get("category")
+    pk = int(request.json.get("pk"))
+    result = None
+    log(category, pk)
+    try:
+        if category == "npc" and pk:
+            result = NPC.get(pk).delete()
+        elif category == "player" and pk:
+            result = Player.get(pk).delete()
+        elif category == "monsters" and pk:
+            result = Monster.get(pk).delete()
+        elif category == "spells" and pk:
+            result = Spell.get(pk).delete()
+        elif category == "items" and pk:
+            result = Item.get(pk).delete()
+        elif category == "shop" and pk:
+            result = Shop.get(pk).delete()
+    except Exception as e:
+        log(e)
+        result = f"Unexpected Error: {e}"
+
+    return {"results": result}

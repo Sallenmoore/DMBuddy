@@ -10,41 +10,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function bindEvents() {
 
+  // General
   add_class_event('statcard-view', 'click', statcard);
+  add_id_event('statcard-clear', 'click', () => { get_object_by_id('statblock').innerHTML = ""; });
+  add_class_event('item-delete', 'click', deleteitem);
 
-
-  add_id_event('search-input', 'input', dndsearch);
-  add_id_event('category', 'change', dndsearch);
-
+  // Nav
   add_id_event('nav-reference', 'click', referencetab);
   add_id_event('reference-tab-title', 'click', referencetab);
 
+  // Reference
+  add_id_event('search-input', 'input', dndsearch);
+  add_id_event('category', 'change', dndsearch);
+
+  // NPC
   add_id_event('nav-npc', 'click', npctab);
   add_id_event('npc-tab-title', 'click', npctab);
   add_id_event('generate-npc', 'click', npcgen);
 
+  // Shop
   add_id_event('nav-shop', 'click', shoptab);
   add_id_event('shop-tab-title', 'click', shoptab);
   add_id_event('generate-shop', 'click', shopgen);
 
+  // Encounter
   add_id_event('nav-encounter', 'click', encountertab);
   add_id_event('encounter-tab-title', 'click', encountertab);
   add_id_event('generate-encounter', 'click', encountergen);
 }
 
-function npcgen() {
-  console.log("npcs");
+
+function getTaskStatus(taskID) {
+  console.log(taskID);
+  post_data("checktask", { "id": taskID }, res => {
+    console.log(res);
+    console.log(res.results.task_id);
+    console.log(res.results.task_status);
+    console.log(res.results.task_results);
+    location.reload();
+    // if (res.results.task_status != 'SUCCESS' && res.results.task_status != 'FAILURE') {
+    //   setTimeout(() => getTaskStatus(res.results.task_id), 2000);
+    // }
+  });
+}
+
+function task(task_name, task_data = {}) {
   let loader = document.createElement('div');
   loader.classList.add('is-loading');
-  this.parentNode.appendChild(loader);
-  get_data("npcs", (data) => {
-    setTimeout(() => {
-      loader.remove();
-      let results = document.getElementById('statblock');
-      results.innerHTML = "";
-      location.reload();
-    }, 30000);
+  let statblock = get_object_by_id('statblock');
+  statblock.insertBefore(loader, statblock.firstChild);
+  task = {};
+  task[task_name] = task_data;
+  post_data("task", task, (data) => {
+    setTimeout(() => getTaskStatus(data.results.results), 30000);
   });
+}
+
+function npcgen() {
+  task("generateNPC");
 }
 
 function shopgen() {
@@ -54,6 +77,15 @@ function shopgen() {
 function encountergen() {
   console.log("encounters");
 }
+
+function imggen() {
+  let statblock = this.closest('.statblock');
+  let pk = statblock.dataset.pk;
+  let category = statblock.dataset.category;
+  task("generateImage", { "pk": pk, "category": category });
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 function tab_toggle(tabselected) {
   let tabs = get_object_by_id("generator-tabs");
@@ -101,7 +133,7 @@ function dndsearch() {
         new_entry.removeAttribute("id");
         new_entry.dataset.pk = el["pk"];
         new_entry.querySelector('a').innerHTML = el["name"];
-        console.log(new_entry);
+        //console.log(new_entry);
         results.appendChild(new_entry);
         add_event(new_entry, 'click', statcard);
       });
@@ -110,34 +142,33 @@ function dndsearch() {
 }
 
 function statcard() {
-  let pk = this.dataset.pk;
-  let category = this.dataset.category;
+  var item = this.closest('.statcard-item');
+  let pk = item.dataset.pk;
+  let category = item.dataset.category;
   post_data("statblock", { pk: pk, category: category }, (data) => {
     let results = document.getElementById('statblock');
-    results.innerHTML = "";
-    console.log(data);
+    //console.log(data);
     if (data["results"]) {
       let div = document.createElement('div');
+      div.classList.add('column');
       div.innerHTML = data["results"];
-      results.appendChild(div);
+      results.insertBefore(div, results.firstChild);
+      add_class_event('generate-image', 'click', imggen);
     } else {
       results.innerHTML = "No statblock found";
     }
-    // add_class_event('inventory-select', 'change', () => {
-    //   get_objects_by_class('item-description').forEach(el => { hide(el); });
-    //   //console.log(this.value);
-    //   show(document.getElementById(this.value));
-    // });
-    // add_class_event('spell-select', 'change', () => {
-    //   get_objects_by_class('spell-description').forEach(el => { hide(el); });
-    //   //console.log(this.value);
-    //   show(document.getElementById(this.value));
-    // });
-    // add_class_event('monster-select', 'change', () => {
-    //   get_objects_by_class('feature-description').forEach(el => { hide(el); });
-    //   //console.log(this.value);
-    //   show(document.getElementById(this.value));
-    // });
   });
 }
 
+
+//////////////////////////////////////////  Delete Items  //////////////////////////////////////////
+
+function deleteitem() {
+  var item = this.closest('.statcard-item');
+  let pk = item.dataset.pk;
+  let category = item.dataset.category;
+  post_data("delete", { pk: pk, category: category }, (data) => {
+    console.log(data);
+    item.remove();
+  });
+}

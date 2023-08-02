@@ -1,17 +1,16 @@
 import os
-
-# from models import Model
-from autonomous.assets import build_assets, javascript
-from config import DevelopmentConfig
-import filters
 from flask import Flask
 
+from autonomous.assets import build_assets
+from autonomous.tasks import make_taskrunner
+from config import Config
+import filters
 from views.index import index_page
 
 
 def create_app():
     app = Flask(os.getenv("APP_NAME", __name__))
-    app.config.from_object(DevelopmentConfig)
+    app.config.from_object(Config)
 
     #################################################################
     #                             Filters                           #
@@ -24,10 +23,10 @@ def create_app():
     #                             Extensions                        #
     #################################################################
 
-    def compile_assets():
-        build_assets()
+    app.before_request(lambda: build_assets())
 
-    app.before_request(lambda: compile_assets())
+    # - Tasks
+    make_taskrunner(app)
 
     #################################################################
     #                             ROUTES                            #
@@ -38,3 +37,7 @@ def create_app():
     ######################################
     app.register_blueprint(index_page)
     return app
+
+
+############################ TASK RUNNER ###############################
+autotask = create_app().extensions["celery"]

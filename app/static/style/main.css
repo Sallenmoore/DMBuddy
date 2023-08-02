@@ -3096,7 +3096,7 @@ label:not(:last-child) {
   border-top-left-radius: var(--button-radius);
 }
 
-.button--close {
+.button__close {
   --background-color: hsl(0deg, 0%, 22.3529411765%, 0.23);
   --icon-color: inherit;
   --height: 1.2rem;
@@ -3115,13 +3115,13 @@ label:not(:last-child) {
   text-align: center;
   width: var(--width);
 }
-.button--close.has-no-background {
+.button__close.has-no-background {
   --background-color: transparent;
 }
-.button--close:not(.has-no-background):hover {
+.button__close:not(.has-no-background):hover {
   --background-color: var(--hover-background-color);
 }
-.button--close::before, .button--close::after {
+.button__close::before, .button__close::after {
   border-color: inherit;
   border-style: solid;
   border-width: var(--icon-width);
@@ -3132,10 +3132,10 @@ label:not(:last-child) {
   transform-origin: center center;
   top: 50%;
 }
-.button--close::after {
+.button__close::after {
   width: 50%;
 }
-.button--close::before {
+.button__close::before {
   height: 50%;
 }
 

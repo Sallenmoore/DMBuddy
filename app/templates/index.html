@@ -31,6 +31,11 @@
                 Encounter Generator
             </a>
         </li>
+        <li id="statcard-clear">
+            <a class="button">
+                Clear Stat Cards
+            </a>
+        </li>
     </ul>
 </div>
 
@@ -81,15 +86,33 @@
                         <div class="column">
                             <h2>NPC Generator</h2>
                             <button class="button is-primary" id="generate-npc">Generate NPC</button>
+                            {% for npc in npcs %}
+                            {% if npc.canonized %}
+                            <li class="accordion__item statcard-view" data-pk="{{npc.pk}}" data-category="npc">
+                                <a href="#" class="accordion__title">{{npc.name}}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
                         </div>
                         {% if npcs %}
                         <div class="column" id="npc-list-container">
                             <div class="accordion">
                                 <ul class="accordion__list" id="npc-list">
                                     {% for npc in npcs %}
-                                    <li class="accordion__item statcard-view" data-pk="{{npc.pk}}" data-category="npc">
-                                        <a href="#" class="accordion__title">{{npc.name}}</a>
+                                    {% if not npc.canonized %}
+                                    <li class="accordion__item statcard-item" data-pk="{{npc.pk}}" data-category="npc">
+                                        <div class="row">
+                                            <div class="column">
+                                                <a href="#" class="accordion__title statcard-view">
+                                                    {{npc.name}}
+                                                </a>
+                                            </div>
+                                            <div class="column is-shrink">
+                                                <a href="#" class="button__close item-delete"></a>
+                                            </div>
+                                        </div>
                                     </li>
+                                    {% endif %}
                                     {% endfor %}
                                 </ul>
                             </div>
@@ -133,7 +156,9 @@
             </div>
         </div>
     </div>
-    <div class="column" id="statblock">
+    <div class="column">
+        <div class="row is-vertical" id="statblock">
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -159,17 +159,59 @@
 {%- endmacro %}
 
 {% macro pcstatblock(info) -%}
-<div class="row statblock is-vertical pccard" data-pk="{{info['pk']}}">
+<div class="row statblock is-vertical pccard" data-pk="{{info['pk']}}" data-category="npc">
     <div class="column">
-        <h1>{{info['name']}}</h1>
-        <p style="font-style: italic;">{{info['desc'] | safe}}</p>
+        <div class="row has-centered">
+            <div class="column is-half">
+                <h1>{{info['name']}}</h1>
+                {% if info.canonized %}
+                <span class="tag is-highlight">canon</span>
+                {% else %}
+                <span class="tag is-lowlight">free</span>
+                {% endif %}
+                {% if info['image']['url'] %}
+                <div class="image is-rounded-tile">
+                    <img src="{{info['image']['url']}}" />
+                </div>
+                <a class="button generate-image is-small">Regenerate Image</a>
+                {% else %}
+                <a class="button generate-image">Generate Image</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <ul>
+                    <li><span class="stat">Occupation</span>
+                        <ul>
+                            <li>{{info.occupation}}</li>
+                        </ul>
+                    </li>
+                    <li><span class="stat">Personality</span>
+                        <ul>
+                            {% for k in info.personality %}
+                            <li>{{k}}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="column">
+                <p>
+                    {{ info['desc'] }}
+                </p>
+            </div>
+        </div>
+
+        <svg height="5" width="100%" class="tapered-rule">
+            <polyline points="0,0 400,2.5 0,5"></polyline>
+        </svg>
+        <p class="panel has-bg-light">{{info['backstory'] | safe}}</p>
     </div>
     <div class="column">
         <div class="row has-spacing">
-            <div class="column is-3">
-                <div class="image is-rounded-tile" style="padding-bottom:1rem;">
-                    <img src="{{info['image']['url']}}" />
-                </div>
+            <div class="column">
+
                 <svg height="5" width="100%" class="tapered-rule">
                     <polyline points="0,0 400,2.5 0,5"></polyline>
                 </svg>
@@ -200,7 +242,7 @@
                     </div> <!-- ability charisma --><!-- abilities -->
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column" id="npc-{{info.pk}}">
                 <div class="top-stats">
                     <svg height="5" width="100%" class="tapered-rule">
                         <polyline points="0,0 400,2.5 0,5"></polyline>
@@ -229,7 +271,7 @@
                         <li>
                             <span class="stat">Money</span>
                             <ul>
-                                {% for k,v in info['wealth'].items() %}
+                                {% for k,v in info['wealth'] %}
                                 <li>{{k}}: {{v}} </li>
                                 {% endfor %}
                             </ul>
@@ -237,7 +279,7 @@
                     </ul>
                 </div>
             </div>
-            {# <div class="column">
+            <div class="column">
                 {% if info['resistance'] %}
                 <svg height="5" width="100%" class="tapered-rule">
                     <polyline points="0,0 400,2.5 0,5"></polyline>
@@ -257,23 +299,23 @@
                 </svg>
                 <h3>Inventory</h3>
                 <div class="row">
-                    <div class="column is-full">
+                    {# <div class="column is-full">
                         <div class="is-select">
                             <select class="inventory-select">
                                 <option value=""></option>
                                 {% for r in info['inventory'] %}
-                                <option value="inventory-{{r.get('name')|slug}}">
-                                    {{r.get("name")}}
+                                <option value="r.name">
+                                    {{r.name}}
                                 </option>
                                 {%endfor %}
                             </select>
                         </div>
-                    </div>
+                    </div> #}
 
                     <div class="column">
                         {% for r in info['inventory'] %}
-                        <div class="item-description is-hidden panel" id="inventory-{{r.get('name')|slug}}">
-                            {{r.get("description")|safe}}
+                        <div class="item-description">
+                            {{r}}
                         </div>
                         {%endfor %}
                     </div>
@@ -285,7 +327,7 @@
                 </svg>
                 <h3>Actions and Features</h3>
                 <div class="row">
-                    <div class="column is-full">
+                    {# <div class="column is-full">
                         <div class="is-select">
                             <select class="feature-select">
                                 <option value=""></option>
@@ -296,44 +338,33 @@
                                 {% endfor %}
                             </select>
                         </div>
-                    </div>
+                    </div> #}
                     <div class="column">
                         {% for k, v in info['features'].items() %}
-                        <div class="feature-description is-hidden panel" id="feature-{{k|slug}}">
+                        <div class="feature-description panel">
                             {{v|safe}}
                         </div>
                         {%endfor %}
                     </div>
                 </div>
                 {% endif %}
+
                 {% if info['spells'] %}
                 <svg height="5" width="100%" class="tapered-rule">
                     <polyline points="0,0 400,2.5 0,5"></polyline>
                 </svg>
                 <h3>Spells</h3>
                 <div class="row">
-                    <div class="column is-full">
-                        <div class="is-select">
-                            <select class="spell-select">
-                                <option value=""></option>
-                                {% for k in info['spells'] %}
-                                <option value="spell-{{k|slug}}">
-                                    {{k}}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
                     <div class="column">
-                        {% for k, v in info['spells'].items() %}
-                        <div class="spell-description is-hidden panel" id="spell-{{k|slug}}">
-                            {{v|safe}}
+                        {% for k in info['spells'] %}
+                        <div class="spell-description panel">
+                            {{k|safe}}
                         </div>
                         {%endfor %}
                     </div>
-                    {% endif %}
                 </div>
-            </div> #}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

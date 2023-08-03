@@ -1,7 +1,6 @@
-# Keys
+# Misc
+app/tables/
 
-firebase.json
-app/static/images/dnd/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

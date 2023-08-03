@@ -40,7 +40,7 @@
 </div>
 
 <div class="row">
-    <div class="column">
+    <div class="column is-3">
         <div class="row" id="generator-tabs">
             <div class="column is-full {% if session.get('page', 'reference') != 'reference' %} is-hidden {% endif %}"
                 id="reference-tab">
@@ -82,10 +82,10 @@
             </div>
             <div class="column is-full {% if session['page'] != 'npc' %} is-hidden {% endif %}" id="npc-tab">
                 <div class="panel">
-                    <div class="row">
+                    <div class="row is-vertical">
                         <div class="column">
-                            <h2>NPC Generator</h2>
                             <button class="button is-primary" id="generate-npc">Generate NPC</button>
+                            <h4>Canon NPCs</h4>
                             {% for npc in npcs %}
                             {% if npc.canonized %}
                             <li class="accordion__item statcard-view" data-pk="{{npc.pk}}" data-category="npc">
@@ -96,6 +96,7 @@
                         </div>
                         {% if npcs %}
                         <div class="column" id="npc-list-container">
+                            <h4>Free NPCs</h4>
                             <div class="accordion">
                                 <ul class="accordion__list" id="npc-list">
                                     {% for npc in npcs %}
@@ -156,8 +157,8 @@
             </div>
         </div>
     </div>
-    <div class="column">
-        <div class="row is-vertical" id="statblock">
+    <div class="column ">
+        <div class="row" id="statblock">
         </div>
     </div>
 </div>

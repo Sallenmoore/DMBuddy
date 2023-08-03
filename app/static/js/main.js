@@ -151,6 +151,7 @@ function statcard() {
     if (data["results"]) {
       let div = document.createElement('div');
       div.classList.add('column');
+      div.classList.add('is-half');
       div.innerHTML = data["results"];
       results.insertBefore(div, results.firstChild);
       add_class_event('generate-image', 'click', imggen);

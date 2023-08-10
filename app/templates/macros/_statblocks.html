@@ -28,7 +28,7 @@
                         class="pc-details" type="text">
                     {% endfor %}
                     <label class="subtitle">Age</label>
-                    <input value="{{info.age}}" name="age" id="age-{{info.pk}}">
+                    <input value="{{info.age}}" class="pc-details" name="age" id="age-{{info.pk}}" type="number">
                 </div>
                 <div class="column">
                     <label class="subtitle">Character History</label>
@@ -80,7 +80,7 @@
                         </div>
                         <div class="column is-4">
                             <label class="attribute">CHA</label>
-                            <input value={{info['cha']}} </div>
+                            <input value={{info['cha']}} name="cha" id="cha-{{info.pk}}" type="number">
                         </div>
                     </div>
                 </div>

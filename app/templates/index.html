@@ -44,26 +44,26 @@
         <div class="row" id="generator-tabs">
             <div class="column is-full {% if session.get('page', 'reference') != 'reference' %} is-hidden {% endif %}"
                 id="reference-tab">
-                <div class="row">
+                <div class="row is-vertical">
                     <div class="column">
                         <h2> Reference </h2>
                         <form id="reference-search">
                             <label>Category</label>
                             <div class="is-select">
                                 <select name="category" id="category">
-                                    <option value="monsters" {% if category=="monsters" %} selected {% endif %}>
+                                    <option value="Monster" {% if category=="Monster" %} selected {% endif %}>
                                         Monsters
                                     </option>
-                                    <option value="items" {% if category=="items" %} selected {% endif %}>
+                                    <option value="Item" {% if category=="Item" %} selected {% endif %}>
                                         Items
                                     </option>
-                                    <option value="spells" {% if category=="spells" %} selected {% endif %}>
+                                    <option value="Spell" {% if category=="Spell" %} selected {% endif %}>
                                         Spells
                                     </option>
-                                    <option value="characters" {% if category=="characters" %} selected {% endif %}>
+                                    <option value="Character" {% if category=="Character" %} selected {% endif %}>
                                         Characters
                                     </option>
-                                    <option value="shops" {% if category=="shops" %} selected {% endif %}>
+                                    <option value="Shop" {% if category=="Shop" %} selected {% endif %}>
                                         Shops
                                     </option>
                                 </select>
@@ -87,9 +87,18 @@
                             <button class="button is-primary" id="generate-npc">Generate NPC</button>
                             <h4>Canon NPCs</h4>
                             {% for npc in npcs %}
-                            {% if npc.canonized %}
-                            <li class="accordion__item statcard-view" data-pk="{{npc.pk}}" data-category="npc">
-                                <a href="#" class="accordion__title">{{npc.name}}</a>
+                            {% if npc.canon %}
+                            <li class="accordion__item statcard-item" data-pk="{{npc.pk}}" data-category="NPC">
+                                <div class="row">
+                                    <div class="column">
+                                        <a href="#" class="accordion__title statcard-view">
+                                            {{npc.name}}
+                                        </a>
+                                    </div>
+                                    <div class="column is-shrink">
+                                        <a href="#" class="button__close item-delete"></a>
+                                    </div>
+                                </div>
                             </li>
                             {% endif %}
                             {% endfor %}
@@ -100,8 +109,8 @@
                             <div class="accordion">
                                 <ul class="accordion__list" id="npc-list">
                                     {% for npc in npcs %}
-                                    {% if not npc.canonized %}
-                                    <li class="accordion__item statcard-item" data-pk="{{npc.pk}}" data-category="npc">
+                                    {% if not npc.canon %}
+                                    <li class="accordion__item statcard-item" data-pk="{{npc.pk}}" data-category="NPC">
                                         <div class="row">
                                             <div class="column">
                                                 <a href="#" class="accordion__title statcard-view">
@@ -157,8 +166,8 @@
             </div>
         </div>
     </div>
-    <div class="column ">
-        <div class="row" id="statblock">
+    <div class="column">
+        <div class="row is-vertical" id="statblock">
         </div>
     </div>
 </div>

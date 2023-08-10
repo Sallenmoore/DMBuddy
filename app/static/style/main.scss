@@ -18,13 +18,13 @@ $grid-sizes: repeat(20, 1fr) !default; //
 //     --var: " ";
 // }
 
-input[type="text"],
-select,
-option {
-  color: $light;
-  font-size: 1.5rem;
-  font-weight: 500;
-}
+// input[type="text"],
+// select,
+// option {
+//   color: $light;
+//   font-size: 1.5rem;
+//   font-weight: 500;
+// }
 
 option {
   color: $dark;
@@ -32,10 +32,6 @@ option {
 
 #pc_list li {
   border: 1px solid $primary;
-}
-
-.tapered-rule {
-  margin: 0.5rem 0;
 }
 
 // .overlay {

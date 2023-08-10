@@ -1,6 +1,267 @@
+{% macro pcstatblock(info) -%}
+<form class="statblock-form">
+    <div class="row statblock" data-pk="{{info.pk}}" data-category="NPC">
+        <div class="column is-full">
+            <div class="row">
+                <div class="column is-full">
+                    <input value="{{info.name}}" name="name" id="name-{{info.pk}}" class="pc-details title" type="text">
+                </div>
+                <div class="column is-shrink">
+                    {% if info.image['url'] %}
+                    <div class="image is-large is-rounded-tile">
+                        <img src="{{info.image['url']}}" />
+                    </div>
+                    <a class="button generate-image is-small">Regenerate Image</a>
+                    {% else %}
+                    <a class="button generate-image">Generate Image</a>
+                    {% endif %}
+                </div>
+                <div class="column is-2">
+                    <label for="occupation-{{info.pk}}" class="subtitle">Occupation</label>
+
+                    <input value="{{info.occupation}}" name="occupation" id="occupation-{{info.pk}}" class="pc-details"
+                        type="text">
+
+                    <label class="subtitle">Personality</label>
+                    {% for k in info.personality %}
+                    <input value="{{k}}" name="personality-{{loop.index}}" id="personality-{{info.pk}}-{{loop.index}}"
+                        class="pc-details" type="text">
+                    {% endfor %}
+                    <label class="subtitle">Age</label>
+                    <input value="{{info.age}}" name="age" id="age-{{info.pk}}">
+                </div>
+                <div class="column">
+                    <label class="subtitle">Character History</label>
+                    <textarea name="backstory" id="backstory-{{info.pk}}"
+                        style="min-height:100%">{{info.backstory | safe}}</textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <label class="attribute">Canon</label>
+                    <div class="is-switch">
+                        <input value="{{info.canon}}" type="checkbox" id="canon-{{info.pk}}" name="canon" {% if
+                            info.canon %} checked {%endif%}>
+                        <label for="canon-{{info.pk}}"></label>
+                    </div>
+                    <hr>
+                    <label class="subtitle">Description</label>
+                    <textarea name="desc" rows=3 id="desc-{{info.pk}}">{{info.desc | safe}}</textarea>
+                    <hr>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <div class="row is-vertical">
+                <div class="column" id="character-attributes-{{info.pk}}">
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+                    <div class="row">
+                        <div class="column is-4">
+                            <label class="attribute">STR</label>
+                            <input value={{info['str']}} name="str" id="str-{{info.pk}}" type="number">
+                        </div> <!-- ability strength -->
+                        <div class="column is-4">
+                            <label class="attribute">DEX</label>
+                            <input value={{info['dex']}} name="dex" id="dex-{{info.pk}}" type="number">
+                        </div> <!-- ability dexterity -->
+                        <div class="column is-4">
+                            <label class="attribute">CON</label>
+                            <input value={{info['con']}} name="con" id="con-{{info.pk}}" type="number">
+                        </div> <!-- ability constitution -->
+                        <div class="column is-4">
+                            <label class="attribute">INT</label>
+                            <input value={{info['int']}} name="int" id="int-{{info.pk}}" type="number">
+                        </div> <!-- ability intelligence -->
+                        <div class="column is-4">
+                            <label class="attribute">WIS</label>
+                            <input value={{info['wis']}} name="wis" id="wis-{{info.pk}}" type="number">
+                        </div>
+                        <div class="column is-4">
+                            <label class="attribute">CHA</label>
+                            <input value={{info['cha']}} </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column" id="character-stats-{{info.pk}}">
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+
+                    <div class="row">
+                        <div class="column is-half is-inline-label">
+                            <label class="attribute">Race</label>
+                        </div>
+                        <div class="column is-half">
+                            <input value="{{info.race}}" name="race" id="race-{{info.pk}}" type="text">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column is-half is-inline-label">
+                            <label class="attribute">AC</label>
+                        </div>
+                        <div class="column is-half">
+                            <input value="{{info.ac}}" name="ac" id="ac-{{info.pk}}" type="number">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column is-half is-inline-label">
+                            <label class="attribute">Hit Points</label>
+                        </div>
+                        <div class="column is-half">
+                            <input value="{{info['hp']}}" name="hp" id="hp-{{info.pk}}" type="number">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column is-half is-inline-label">
+                            <label class="attribute">Passive Perception</label>
+                        </div>
+                        <div class="column is-half">
+                            <input value="{{info.passive_perception}}" type="number" disabled>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column is-half is-inline-label">
+                            <label class="attribute">Speed</label>
+                        </div>
+                        <div class="column is-half">
+                            {% for k,v in info.speed.items() %}
+                            <div class="is-input-group">
+                                <span class="input-group-addon">{{k}}</span>
+                                <input value="{{v}}" name="speed-{{k}}" id="speed-{{k}}-{{info.pk}}" type="number">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column is-half is-inline-label">
+                            <label class="attribute">Wealth</label>
+                        </div>
+                        <div class="column is-half">
+                            {% for v in info.wealth %}
+                            <input value="{{v}}" name="wealth-{{v}}" id="wealth-{{v}}-{{info.pk}}" type="number">
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="row">
+                <div class="column">
+                    <h3>Resistances and Immunities</h3>
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+
+
+                    {% if info.resistances %}
+                    {% for r in info.resistances %}
+                    <div class="is-input-group">
+                        <input value="{{r}}" name="resistances-{{loop.index}}"
+                            id="resistances-{{loop.index}}-{{info.pk}}" type="text">
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    No resistances
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <h3>Actions and Features</h3>
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+
+
+                    {% if info['features'] %}
+                    {# <div class="column is-full">
+                        <div class="is-select">
+                            <select class="feature-select">
+                                <option value=""></option>
+                                {% for k in info['features'] %}
+                                <option value="feature-{{k|slug}}">
+                                    {{k}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div> #}
+                    {% for v in info['features'] %}
+                    <div class="is-input-group">
+                        <input value="{{r}}" name="features-{{loop.index}}" id="features-{{loop.index}}-{{info.pk}}"
+                            type="text">
+                    </div>
+                    {%endfor %}
+                    {% else %}
+                    No features
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+
+                    <h3>Inventory</h3>
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+
+
+                    {% if info['inventory'] %}
+                    {# <div class="column is-full">
+                        <div class="is-select">
+                            <select class="inventory-select">
+                                <option value=""></option>
+                                {% for r in info['inventory'] %}
+                                <option value="r.name">
+                                    {{r.name}}
+                                </option>
+                                {%endfor %}
+                            </select>
+                        </div>
+                    </div> #}
+                    {% for r in info.inventory %}
+                    <div class="is-input-group">
+                        <input value="{{r}}" name="inventory-{{loop.index}}" id="inventory-{{loop.index}}-{{info.pk}}"
+                            type="text">
+                    </div>
+                    {%endfor %}
+                    {% else %}
+                    No inventory
+                    {% endif %}
+                </div>
+                <div class="column">
+                    <h3>Spells</h3>
+                    <svg height="5" width="100%" class="tapered-rule">
+                        <polyline points="0,0 400,2.5 0,5"></polyline>
+                    </svg>
+
+
+                    {% if info.spells %}
+                    <div class="row">
+                        <div class="column">
+                            {% for r in info['spells'] %}
+                            <div class="is-input-group">
+                                <input value="{{r}}" name="spells-{{loop.index}}" id="spells-{{loop.index}}-{{info.pk}}"
+                                    type="text">
+                            </div>
+                            {%endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    No spells
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{%- endmacro %}
+
 {% macro mobstatblock(info) -%}
 <form>
-    <div class="row statblock is-vertical mobcard" data-pk="{{info['pk']}}">
+    <div class="row statblock is-vertical mobcard" data-category="Monster" data-pk="{{info['pk']}}">
         <div class="column">
             <h1>{{info['name']}}</h1>
             <p style="font-style: italic;">{{info['desc']}}</p>
@@ -12,6 +273,9 @@
                     <div class="image">
                         <img src="{{info['image']['url']}}" />
                     </div>
+                    <a class="button generate-image is-small">Regenerate Image</a>
+                    {% else %}
+                    <a class="button generate-image">Generate Image</a>
                     {% endif %}
                     <svg height="5" width="100%" class="tapered-rule">
                         <polyline points="0,0 400,2.5 0,5"></polyline>
@@ -159,226 +423,9 @@
 </form>
 {%- endmacro %}
 
-{% macro pcstatblock(info) -%}
-<form>
-    <div class="row statblock pccard" data-pk="{{info['pk']}}" data-category="npc">
-        <div class="column is-full">
-            <div class="row">
-                <div class="column is-full">
-                    <h1>{{info['name']}}</h1>
-                </div>
-                <div class="column is-8">
-                    {% if info['image']['url'] %}
-                    <div class="image is-rounded-tile">
-                        <img src="{{info['image']['url']}}" />
-                    </div>
-                    <a class="button generate-image is-small">Regenerate Image</a>
-                    {% else %}
-                    <a class="button generate-image">Generate Image</a>
-                    {% endif %}
-                </div>
-                <div class="column is-full">
-                    <p>
-                        {% if info.canonized %}
-                        <span class="tag is-highlight">canon</span>
-                        {% else %}
-                        <span class="tag is-lowlight">free</span>
-                        {% endif %}
-                        <br>
-                        {{ info['desc'] }}
-                    </p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="column">
-                    <ul>
-                        <li><span class="stat">Occupation</span>
-                            <ul>
-                                <li>{{info.occupation}}</li>
-                            </ul>
-                        </li>
-                        <li><span class="stat">Personality</span>
-                            <ul>
-                                {% for k in info.personality %}
-                                <li>{{k}}</li>
-                                {% endfor %}
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <svg height="5" width="100%" class="tapered-rule">
-                <polyline points="0,0 400,2.5 0,5"></polyline>
-            </svg>
-            <p class="panel has-bg-light">{{info['backstory'] | safe}}</p>
-        </div>
-        <div class="column">
-            <div class="row is-vertical">
-                <div class="column">
-
-                    <svg height="5" width="100%" class="tapered-rule">
-                        <polyline points="0,0 400,2.5 0,5"></polyline>
-                    </svg>
-                    <div class="row">
-                        <div class="column is-shrink">
-                            <p class="stat">STR</p>
-                            <p>{{info['str']}}</p>
-                        </div> <!-- ability strength -->
-                        <div class="column is-shrink">
-                            <p class="stat">DEX</p>
-                            <p>{{info['dex']}}</p>
-                        </div> <!-- ability dexterity -->
-                        <div class="column is-shrink">
-                            <p class="stat">CON</p>
-                            <p>{{info['con']}}</p>
-                        </div> <!-- ability constitution -->
-                        <div class="column is-shrink">
-                            <p class="stat">INT</p>
-                            <p>{{info['int']}}</p>
-                        </div> <!-- ability intelligence -->
-                        <div class="column is-shrink">
-                            <p class="stat">WIS</p>
-                            <p>{{info['wis']}}</p>
-                        </div> <!-- ability wisdom -->
-                        <div class="column is-shrink">
-                            <p class="stat">CHA</p>
-                            <p>{{info['cha']}}</p>
-                        </div> <!-- ability charisma --><!-- abilities -->
-                    </div>
-                </div>
-                <div class="column" id="npc-{{info.pk}}">
-                    <div class="top-stats">
-                        <svg height="5" width="100%" class="tapered-rule">
-                            <polyline points="0,0 400,2.5 0,5"></polyline>
-                        </svg>
-                        <ul>
-                            <li>
-                                <span class="stat">Race</span> {{info['race']}}
-                            </li>
-                            <li>
-                                <span class="stat">Armor Class</span> {{info['ac']}}
-                            </li>
-                            <li>
-                                <span class="stat">Hit Points</span> {{info['hp']}}
-                            </li>
-                            <li>
-                                <span class="stat">Passive Perception</span> {{info['wis'] + 10}}
-                            </li>
-                            <li>
-                                <span class="stat">Speed</span>
-                                <ul>
-                                    {% for k,v in info['speed'].items() %}
-                                    <li>{{k}}: {{v}} </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="stat">Money</span>
-                                <ul>
-                                    {% for k,v in info['wealth'] %}
-                                    <li>{{k}}: {{v}} </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="column">
-                    {% if info['resistance'] %}
-                    <svg height="5" width="100%" class="tapered-rule">
-                        <polyline points="0,0 400,2.5 0,5"></polyline>
-                    </svg>
-                    <h3>Resistances and Immunities</h3>
-                    <ul>
-                        {% for r in info['resistances'] %}
-                        <li>
-                            {{r}}
-                        </li>
-                        {%endfor %}
-                    </ul>
-                    {% endif %}
-                    {% if info['inventory'] %}
-                    <svg height="5" width="100%" class="tapered-rule">
-                        <polyline points="0,0 400,2.5 0,5"></polyline>
-                    </svg>
-                    <h3>Inventory</h3>
-                    <div class="row">
-                        {# <div class="column is-full">
-                            <div class="is-select">
-                                <select class="inventory-select">
-                                    <option value=""></option>
-                                    {% for r in info['inventory'] %}
-                                    <option value="r.name">
-                                        {{r.name}}
-                                    </option>
-                                    {%endfor %}
-                                </select>
-                            </div>
-                        </div> #}
-
-                        <div class="column">
-                            {% for r in info['inventory'] %}
-                            <div class="item-description">
-                                {{r}}
-                            </div>
-                            {%endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% if info['features'] %}
-                    <svg height="5" width="100%" class="tapered-rule">
-                        <polyline points="0,0 400,2.5 0,5"></polyline>
-                    </svg>
-                    <h3>Actions and Features</h3>
-                    <div class="row">
-                        {# <div class="column is-full">
-                            <div class="is-select">
-                                <select class="feature-select">
-                                    <option value=""></option>
-                                    {% for k in info['features'] %}
-                                    <option value="feature-{{k|slug}}">
-                                        {{k}}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div> #}
-                        <div class="column">
-                            {% for k, v in info['features'].items() %}
-                            <div class="feature-description panel">
-                                {{v|safe}}
-                            </div>
-                            {%endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if info['spells'] %}
-                    <svg height="5" width="100%" class="tapered-rule">
-                        <polyline points="0,0 400,2.5 0,5"></polyline>
-                    </svg>
-                    <h3>Spells</h3>
-                    <div class="row">
-                        <div class="column">
-                            {% for k in info['spells'] %}
-                            <div class="spell-description panel">
-                                {{k|safe}}
-                            </div>
-                            {%endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
-{%- endmacro %}
-
 {% macro itemstatblock(info) -%}
 <form>
-    <div class="row statblock is-vertical itemcard" data-pk="{{info['pk']}}">
+    <div class="row statblock is-vertical itemcard" data-category="Item" data-pk="{{info['pk']}}">
         <div class="column">
             <input class="item-details has-text-dark" type="text" name="name" id="item-name" value="{{info['name']}}">
         </div>
@@ -408,9 +455,11 @@
             </div>
         </div>
     </div>
-    {%- endmacro %}
+</form>
+{%- endmacro %}
 
-    {% macro spellstatblock(info) -%}
+{% macro spellstatblock(info) -%}
+<form>
     <div class="row statblock is-vertical spellcard" data-pk="{{info['pk']}}">
         <div class="column">
             <h1>{{info['name']}}</h1>
@@ -444,57 +493,13 @@
             <p style="font-style: italic;">{{info['variations']}}</p>
         </div>
     </div>
-    {%- endmacro %}
-
-    {% macro npcstatblock(info) -%}
-    <div class="row statblock npccard" data-pk="{{info['pk']}}">
-        <div class="column">
-            <h1>{{info['name']}}</h1>
-            <p style="font-style: italic;">{{info['backstory']}}</p>
-        </div>
-        <div class="column is-one-third">
-            <div class="image">
-                <img src="{{info['image']['url']}}" />
-            </div>
-        </div>
-        <div class="column">
-            <div class="top-stats">
-                <div class="row">
-                    <div class="column is-4">
-                        <p class="stat">STR</p>
-                        <p>{{info['stats']['strength']}}</p>
-                    </div> <!-- ability strength -->
-                    <div class="column is-4">
-                        <p class="stat">DEX</p>
-                        <p>{{info['stats']['dexterity']}}</p>
-                    </div> <!-- ability dexterity -->
-                    <div class="column is-4">
-                        <p class="stat">CON</p>
-                        <p>{{info['stats']['constitution']}}</p>
-                    </div> <!-- ability constitution -->
-                    <div class="column is-4">
-                        <p class="stat">INT</p>
-                        <p>{{info['stats']['intelligence']}}</p>
-                    </div> <!-- ability intelligence -->
-                    <div class="column is-4">
-                        <p class="stat">WIS</p>
-                        <p>{{info['stats']['wisdom']}}</p>
-                    </div> <!-- ability wisdom -->
-                    <div class="column is-4">
-                        <p class="stat">CHA</p>
-                        <p>{{info['stats']['charisma']}}</p>
-                    </div> <!-- ability charisma -->
-                </div> <!-- abilities -->
-            </div>
-        </div>
-    </div>
 </form>
 {%- endmacro %}
 
 {% macro shopstatblock(info) -%}
 <form>
     <div class="panel">
-        <div class="row shopcard" data-pk="{{info['pk']}}">
+        <div class="row shopcard" data-category="Shop" data-pk="{{info['pk']}}">
             <div class="column">
                 <div class="image circle">
                     <img src="{{info['image']['url']}}" />
@@ -518,7 +523,7 @@
 {% macro encounterstatblock(info) -%}
 <form>
     <div class="panel">
-        <div class="row is-vertical encountercard" data-pk="{{info['pk']}}">
+        <div class="row is-vertical encountercard" data-category="Encounter" data-pk="{{info['pk']}}">
             <div class="column">
                 <h1>Combatants</h1>
                 <ul>

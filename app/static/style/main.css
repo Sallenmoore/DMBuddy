@@ -296,8 +296,10 @@ h6,
 .is-very-small-heading, h5,
 .is-small-heading, h4,
 .is-heading, h3,
-.is-medium-heading, h2,
-.is-big-heading, h1,
+.is-medium-heading,
+.statblock .subtitle, h2,
+.is-big-heading,
+.statblock input.title, h1,
 .is-very-big-heading {
   --font-color: inherit;
   --font-family: var(--body-heading-font-family);
@@ -315,8 +317,10 @@ h6.is-subheading,
 .is-subheading.is-very-small-heading, h5.is-subheading,
 .is-subheading.is-small-heading, h4.is-subheading,
 .is-subheading.is-heading, h3.is-subheading,
-.is-subheading.is-medium-heading, h2.is-subheading,
-.is-subheading.is-big-heading, h1.is-subheading,
+.is-subheading.is-medium-heading,
+.statblock .is-subheading.subtitle, h2.is-subheading,
+.is-subheading.is-big-heading,
+.statblock input.is-subheading.title, h1.is-subheading,
 .is-subheading.is-very-big-heading {
   --font-color: hsl(0deg, 0%, 51.3725490196%, 1);
   --font-weight: 400;
@@ -326,8 +330,10 @@ h6:not(.is-subheading) + .is-subheading,
 .is-very-small-heading:not(.is-subheading) + .is-subheading, h5:not(.is-subheading) + .is-subheading,
 .is-small-heading:not(.is-subheading) + .is-subheading, h4:not(.is-subheading) + .is-subheading,
 .is-heading:not(.is-subheading) + .is-subheading, h3:not(.is-subheading) + .is-subheading,
-.is-medium-heading:not(.is-subheading) + .is-subheading, h2:not(.is-subheading) + .is-subheading,
-.is-big-heading:not(.is-subheading) + .is-subheading, h1:not(.is-subheading) + .is-subheading,
+.is-medium-heading:not(.is-subheading) + .is-subheading,
+.statblock .subtitle:not(.is-subheading) + .is-subheading, h2:not(.is-subheading) + .is-subheading,
+.is-big-heading:not(.is-subheading) + .is-subheading,
+.statblock input.title:not(.is-subheading) + .is-subheading, h1:not(.is-subheading) + .is-subheading,
 .is-very-big-heading:not(.is-subheading) + .is-subheading {
   margin-top: -0.32rem;
 }
@@ -335,8 +341,10 @@ h6 + .is-subheading:last-of-type,
 .is-very-small-heading + .is-subheading:last-of-type, h5 + .is-subheading:last-of-type,
 .is-small-heading + .is-subheading:last-of-type, h4 + .is-subheading:last-of-type,
 .is-heading + .is-subheading:last-of-type, h3 + .is-subheading:last-of-type,
-.is-medium-heading + .is-subheading:last-of-type, h2 + .is-subheading:last-of-type,
-.is-big-heading + .is-subheading:last-of-type, h1 + .is-subheading:last-of-type,
+.is-medium-heading + .is-subheading:last-of-type,
+.statblock .subtitle + .is-subheading:last-of-type, h2 + .is-subheading:last-of-type,
+.is-big-heading + .is-subheading:last-of-type,
+.statblock input.title + .is-subheading:last-of-type, h1 + .is-subheading:last-of-type,
 .is-very-big-heading + .is-subheading:last-of-type {
   margin-bottom: -0.32rem;
 }
@@ -347,12 +355,14 @@ h1,
 }
 
 h2,
-.is-big-heading {
+.is-big-heading,
+.statblock input.title {
   --font-size: clamp(1rem, 3rem, 5rem);
 }
 
 h3,
-.is-medium-heading {
+.is-medium-heading,
+.statblock .subtitle {
   --font-size: clamp(1rem, 2rem, 4rem);
 }
 
@@ -1729,6 +1739,13 @@ label:not(:last-child) {
 }
 .is-file-input label {
   font-weight: normal;
+}
+
+.input-label {
+  border-radius: None;
+  border: None;
+  background-color: None;
+  box-shadow: None;
 }
 
 .is-slider {
@@ -3671,34 +3688,50 @@ label:not(:last-child) {
     transform: rotate(360deg);
   }
 }
-.statblock {
-  background: #FDF1DC;
+.statblock, .statblock input, .statblock input input {
+  background: #fdf1dc;
   box-shadow: 0 0 1.5em #867453;
   color: #922610;
   border-radius: 3px;
 }
-.statblock::before, .statblock::after {
+.statblock::before, .statblock input::before, .statblock input input::before, .statblock::after, .statblock input::after, .statblock input input::after {
   display: absolute;
-  background: #E69A28;
+  background: #e69a28;
   border: 1px solid #000;
   height: 5px;
   padding: 0 10px 0;
   margin: -10px -10px 0;
 }
-.statblock h1,
-.statblock h3 {
+.statblock h1, .statblock input h1, .statblock input input h1,
+.statblock h2,
+.statblock input h2,
+.statblock input input h2,
+.statblock h3,
+.statblock input h3,
+.statblock input input h3,
+.statblock h4,
+.statblock input h4,
+.statblock input input h4,
+.statblock h5,
+.statblock input h5,
+.statblock input input h5,
+.statblock h6,
+.statblock input h6,
+.statblock input input h6,
+.statblock .subtitle {
   color: #922610;
+}
+.statblock .subtitle {
   font-variant: small-caps;
   font-weight: bold;
+  color: #922610;
 }
-.statblock h1 {
-  font-size: 2rem;
-}
-.statblock ul {
+.statblock ul, .statblock input ul, .statblock input input ul {
   list-style: none;
 }
-.statblock .stat {
+.statblock .attribute {
   font-weight: 900;
+  color: #922610;
 }
 .statblock .tapered-rule {
   display: block;
@@ -3708,6 +3741,18 @@ label:not(:last-child) {
   color: #922610;
   fill: #922610;
   stroke: #922610;
+}
+.statblock input, .statblock input input, .statblock input input input {
+  border-radius: None;
+  border: None;
+  background-color: None;
+  box-shadow: None;
+  color: #922610;
+}
+.statblock input.title {
+  font-variant: small-caps;
+  font-weight: bold;
+  color: #922610;
 }
 
 .table {
@@ -4147,24 +4192,12 @@ label:not(:last-child) {
     transform: rotate(360deg);
   }
 }
-input[type=text],
-select,
-option {
-  color: #e0d2d2;
-  font-size: 1.5rem;
-  font-weight: 500;
-}
-
 option {
   color: #304352;
 }
 
 #pc_list li {
   border: 1px solid #1c1c1c;
-}
-
-.tapered-rule {
-  margin: 0.5rem 0;
 }
 
 #search-results-container {

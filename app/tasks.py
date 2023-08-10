@@ -2,43 +2,47 @@ import time
 from celery import shared_task
 from autonomous import log
 from models import NPC, Player, Encounter, Monster, Spell, Item, Shop
+from dmtoolkit.apis import DnDBeyondAPI
+from utils import import_model_from_str
 
 
 @shared_task()
 def npcgentask(*args, **kwargs):
     result = NPC.generate()
+    result.generate_image()
     return result.serialize()
 
 
 @shared_task()
 def encountergentask(*args, **kwargs):
-    result = NPC.generate()
+    result = Encounter.generate()
     return result.serialize()
 
 
 @shared_task()
 def shopgentask(*args, **kwargs):
-    result = NPC.generate()
+    result = Shop.generate()
+    result.generate_image()
     return result.serialize()
 
 
 @shared_task()
-def imagegentask(pk=None, category=None):
-    if category == "npc" and pk:
-        result = NPC.get(pk)
-    if category == "pc" and pk:
-        result = Player.get(pk)
-    elif category == "monsters" and pk:
-        result = Monster.get(pk)
-    elif category == "spells" and pk:
-        result = Spell.get(pk)
-    elif category == "items" and pk:
-        result = Item.get(pk)
-    elif category == "shop" and pk:
-        result = Shop.get(pk=pk)
-    else:
-        log(category, pk)
+def imagegentask(model, pk, module=None):
+    model = import_model_from_str(model)
+    obj = model.get(pk)
+    return obj.generate_image()
 
-    if result:
-        return result.generate_image()
-    return 0
+
+@shared_task()
+def ddbtask(dnd_id):
+    return DnDBeyondAPI.get_character(dnd_id)
+
+
+@shared_task()
+def watask(*args, **kwargs):
+    return kwargs
+
+
+@shared_task()
+def wikijstask(*args, **kwargs):
+    return kwargs

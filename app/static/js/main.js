@@ -1,7 +1,10 @@
-
 document.addEventListener("DOMContentLoaded", () => {
+  //=== configure autojs
+  // autojs.configure({
+  //   textarea_autoheight: true, #default: true
+  // });
   //=== Initialize widgets
-
+  new Tab();
   //=== do some code stuff...
 
   //--Set up events
@@ -9,60 +12,49 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function bindEvents() {
-  // General
+
+  // Statcards
   add_class_event('statcard-view', 'click', statcard);
   add_id_event('statcard-clear', 'click', () => { get_object_by_id('statblock').innerHTML = ""; });
   add_class_event('item-delete', 'click', deleteitem);
 
   // Reference
-  add_id_event('nav-reference', 'click', referencetab);
-  add_id_event('reference-tab-title', 'click', referencetab);
   add_id_event('search-input', 'input', dndsearch);
   add_id_event('category', 'change', dndsearch);
 
   // NPC
-  add_id_event('nav-npc', 'click', npctab);
-  add_id_event('npc-tab-title', 'click', npctab);
   add_id_event('generate-npc', 'click', npcgen);
+  add_id_event('update-canon-npc', 'click', update_canon_npc);
 
   // Shop
-  add_id_event('nav-shop', 'click', shoptab);
-  add_id_event('shop-tab-title', 'click', shoptab);
   add_id_event('generate-shop', 'click', shopgen);
 
   // Encounter
-  add_id_event('nav-encounter', 'click', encountertab);
-  add_id_event('encounter-tab-title', 'click', encountertab);
   add_id_event('generate-encounter', 'click', encountergen);
 }
 
 
 function getTaskStatus(taskID, iters) {
-  console.log(taskID);
+  var loader = new Loader('statblock');
   post_data("checktask", { "id": taskID }, res => {
-    console.log(res);
-    console.log(res.results.task_id);
-    console.log(res.results.task_status);
-    console.log(res.results.task_results);
-    console.log(iters);
+    // console.log(res);
+    // console.log(res.results.task_id);
+    // console.log(res.results.task_status);
+    // console.log(res.results.task_results);
+    // console.log(iters);
     if (iters > 0 && res.results.task_status != 'SUCCESS' && res.results.task_status != 'FAILURE') {
       setTimeout(() => getTaskStatus(taskID, iters - 1), 3000);
     } else {
-      get_objects_by_class('is-loading').forEach(el => el.remove());
+      loader.remove();
     }
-    console.log(res.results);
+    //console.log(res.results);
   });
 }
 
 function task(task_name, task_data = {}) {
-  let loader = document.createElement('div');
-  loader.classList.add('is-loading');
-  let statblock = get_object_by_id('statblock');
-  statblock.insertBefore(loader, statblock.firstChild);
   post_data(task_name, task_data, (data) => {
-    console.log(data);
-
-    setTimeout(() => getTaskStatus(data.results, 7), 3000);
+    //console.log(data);
+    setTimeout(() => getTaskStatus(data.results, 7), 100);
   });
 }
 
@@ -89,40 +81,8 @@ function imggen() {
   task("imagegen", { "pk": pk, "category": category });
 }
 
-////////////////////////////////////// Tab Toggle //////////////////////////////////////////
+////////////////////////////////////// AJAX Calls //////////////////////////////////////////
 
-function tab_toggle(tabselected) {
-  let tabs = get_object_by_id("generator-tabs");
-  hide_children(tabs);
-  get_children(get_object_by_id("tab-titles")).forEach(el => {
-    el.classList.remove('is-active');
-  });
-
-  get_object_by_id(`${tabselected}-tab-title`).classList.add('is-active');
-  let panel = get_object_by_id(`${tabselected}-tab`);
-  show(panel);
-  panel.scrollIntoView({
-    block: 'start',
-    behavior: 'smooth',
-    inline: 'start'
-  });
-}
-
-function referencetab() {
-  tab_toggle('reference');
-}
-
-function npctab() {
-  tab_toggle('npc');
-}
-
-function shoptab() {
-  tab_toggle('shop');
-}
-
-function encountertab() {
-  tab_toggle('encounter');
-}
 
 function dndsearch() {
   var results = get_object_by_id("search-results");
@@ -146,13 +106,18 @@ function dndsearch() {
   }
 }
 
-
+function update_canon_npc() {
+  get_data("updatecanon", (data) => {
+    console.log(data);
+  });
+}
 
 function updatestats() {
   var form = this.closest('.statblock-form');
   var obj = form_values(this);
   obj['pk'] = this.querySelector('.statblock').dataset.pk;
   obj['category'] = this.querySelector('.statblock').dataset.category;
+  obj['canon'] = this.querySelector('input[type=checkbox]').checked;
   console.log(obj);
   post_data("updates", obj, (data) => {
     getstatcard(obj['pk'], obj['category']);
@@ -167,23 +132,32 @@ function statcard() {
 }
 
 function getstatcard(pk, category) {
+  var loader = new Loader('statblock');
+  let old_sc = get_object_by_id('pcstatblock-' + pk);
+  if (old_sc) {
+    old_sc.remove();
+  }
   post_data("statblock", { pk: pk, category: category }, (data) => {
-    let results = document.getElementById('statblock');
+    loader.remove();
+    let div = document.createElement('div');
+    div.classList.add('column');
+
+    let statblock = document.getElementById('statblock');
+    statblock.insertBefore(div, statblock.firstChild);
+
     //console.log(data);
+
     if (data["results"]) {
-      let div = document.createElement('div');
-      div.classList.add('column');
       //div.classList.add('is-half');
       div.innerHTML = data["results"];
-      results.insertBefore(div, results.firstChild);
+      autojs.rebind();
       add_class_event('generate-image', 'click', imggen);
       add_class_event('statblock-form', 'change', updatestats);
     } else {
-      results.innerHTML = "No statblock found";
+      div.innerHTML = "No statblock found";
     }
   });
 }
-
 
 //////////////////////////////////////////  Delete Items  //////////////////////////////////////////
 
@@ -192,7 +166,7 @@ function deleteitem() {
   let pk = item.dataset.pk;
   let category = item.dataset.category;
   post_data("delete", { pk: pk, category: category }, (data) => {
-    console.log(data);
+    //console.log(data);
     item.remove();
   });
 }

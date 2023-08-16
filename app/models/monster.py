@@ -9,7 +9,7 @@ from flask import get_template_attribute
 
 class Monster(DnDMonster):
     def statblock(self):
-        snippet = get_template_attribute("macros/_statblocks.html", "mobstatblock")
+        snippet = get_template_attribute("macros/_reference.html", "mobstatblock")
         return snippet(self.serialize())
 
     def generate_image(self, overwrite=False):

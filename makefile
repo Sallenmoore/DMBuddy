@@ -1,5 +1,5 @@
 
-.PHONY: all build run clean deepclean test tests debug
+.PHONY: all build run clean deepclean test tests debug cleandebug
 
 all: test clean run
 
@@ -31,8 +31,10 @@ deepclean: clean
 
 ###### TESTING #######
 
-debug: clean build run
+debug: run
 	docker logs -f $(APP_NAME)
+
+cleandebug: clean build debug
 
 tests: clean build run
 	docker-compose up --build -d

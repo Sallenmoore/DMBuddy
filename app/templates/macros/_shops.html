@@ -1,0 +1,40 @@
+{% macro panel(info) -%}
+<div class="panel">
+    <div class="row">
+        <div class="column">
+            <h2>Shop Generator</h2>
+            <button class="button is-primary" id="generate-shop">Generate Shop</button>
+        </div>
+        <div class="column" id="shop-list-container">
+            <div class="accordion">
+                <ul class="accordion__list" id="shop-list" style>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro statblock(info) -%}
+<form>
+    <div class="panel">
+        <div class="row shopcard" data-category="Shop" data-pk="{{info['pk']}}">
+            <div class="column">
+                <div class="image circle">
+                    <img src="{{info['image']['url']}}" />
+                </div>
+                <h1>{{info['name']}}</h1>
+                <p style="font-style: italic;">{{info['shoptype']}}</p>
+                <p>Proprietor : {{info['owner']}}</p>
+                <ul>
+                    {% for item, price in info['inventory'].items() %}
+                    <li>
+                        {{item}}</span>:{{price}}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</form>
+{%- endmacro %}

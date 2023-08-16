@@ -11,7 +11,7 @@ class Player(DnDCharacter):
     def statblock(self):
         if self.dnd_id:
             self.updateinfo()
-            snippet = get_template_attribute("macros/_statblocks.html", "pcstatblock")
+            snippet = get_template_attribute("macros/_npc.html", "statblock")
             return snippet(self.serialize())
         else:
             raise ValueError("Player has no dnd_id")

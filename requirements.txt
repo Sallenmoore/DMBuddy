@@ -4,7 +4,7 @@
 
 ##### Frameworks #####
 dmtoolkit >= 0.0.14
-autonomous-app >= 0.1.10
+autonomous-app >= 0.1.11
 
 ##### Configuration and Documentation #####
 
@@ -37,6 +37,9 @@ celery
 
 ##### Parsing #####
 
+marko
+markdownify
+pypandoc
 dateparser
 markdown
 

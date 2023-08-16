@@ -5,7 +5,7 @@ from dmtoolkit import DMTools
 from models import Player, Encounter, Monster, Spell, Item, Shop
 from models.npc import NPC
 from tasks import npcgentask, imagegentask, ddbtask, watask
-from utils import import_model_from_str
+from utils import import_model_from_str, get_object
 
 # external Modules
 from flask import Blueprint, render_template, request, session, redirect, url_for
@@ -30,15 +30,6 @@ def index():
 ###############################################################################################
 #                                            API                                              #
 ###############################################################################################
-@index_page.route("/worldanvil", methods=("POST",))
-def worldanvil():
-    """
-    generates a random NPC using AI
-    """
-    task = watask.delay(**request.json)
-    return {"results": task.id}
-
-
 @index_page.route("/ddbdata", methods=("POST",))
 def ddbdata():
     """
@@ -97,6 +88,9 @@ def imagegen():
     return {"results": task.id}
 
 
+# ///////////////////////////////////////////////////////////////////
+
+
 @index_page.route("/search", methods=("POST",))
 def search():
     session["page"] = "reference"
@@ -116,21 +110,22 @@ def search():
 @index_page.route("/statblock", methods=("POST",))
 def statblock():
     # log(request.json)
-    category = request.json.get("category")
-    pk = int(request.json.get("pk"))
-    # log(category, pk)
-    model = import_model_from_str(category)
-    # log(model)
-    obj = model.get(pk=pk)
-    # log(obj.image)
+    obj = get_object(request.json)
+    # log(obj)
     statblock = obj.statblock()
     return {"results": statblock} if statblock else {"results": ""}
+
+
+@index_page.route(rule="/updatecanon", methods=("GET",))
+def update_canon():
+    session["page"] = "npc"
+    return {"results": NPC.pull_canon_updates()}
 
 
 @index_page.route("/updates", methods=("POST",))
 def updates():
     # Parse Request
-    log(request.json)
+    # log(request.json)
     inventory = []
     personality = []
     features = []
@@ -147,7 +142,7 @@ def updates():
             features.append(v)
         elif k.startswith("spells-"):
             spells.append(v)
-    log(inventory, personality, resistances, features, spells)
+    # log(inventory, personality, resistances, features, spells)
 
     # Build Object Data
     obj_data = {}
@@ -161,34 +156,29 @@ def updates():
     request.json["resistances"] = resistances
     obj_data["inventory"] = inventory
     obj_data["spells"] = spells
-    log(obj_data)
 
+    # log(request.json.get("canon"))
+    obj_data["canon"] = request.json.get("canon")
     # Create Object
-    model = import_model_from_str(request.json.get("category"))
-    obj = model.get(obj_data["pk"])
-    obj.__dict__.update(obj_data)
-
-    # Save Object
-    result = obj.save()
-    log(f"result {result}")
+    obj = get_object(obj_data)
 
     # update canon
+    log(obj.canon)
     if obj.canon:
         obj.update_canon()
-
-    return {"results": obj.serialize()}
+    elif obj.wikijs_id:
+        obj.remove_from_canon()
+    obj.save()
+    return {"results": obj.statblock()}
 
 
 @index_page.route("/delete", methods=("POST",))
 def delete():
     # log(request.json)
-    category = request.json.get("category")
-    pk = int(request.json.get("pk"))
     result = None
     # log(category, pk)
     try:
-        model = import_model_from_str(category)
-        model.get(pk).delete()
+        result = get_object(request.json).delete()
     except Exception as e:
         log(e)
         result = f"Unexpected Error: {e}"

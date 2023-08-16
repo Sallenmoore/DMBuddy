@@ -9,5 +9,5 @@ class Shop(DnDShop):
     npc = False
 
     def statblock(self):
-        snippet = get_template_attribute("macros/_statblocks.html", "shopstatblock")
+        snippet = get_template_attribute("macros/_shops.html", "statblock")
         return snippet(self.serialize())

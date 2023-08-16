@@ -1,7 +1,7 @@
 FROM python:3.10
 
 RUN apt-get update
-RUN apt-get install --no-install-recommends -y build-essential curl git
+RUN apt-get install --no-install-recommends -y build-essential curl git pandoc
 
 # Install the vendor applications/configurations
 COPY ./vendor/dart-sass /var/dart-sass

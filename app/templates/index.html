@@ -1,38 +1,42 @@
 {% extends "base.html" %}
 {% import 'macros/_nav.html' as nav with context %}
+{% import 'macros/_npc.html' as npcstab with context %}
+{% import 'macros/_reference.html' as referencetab with context %}
+{% import 'macros/_shops.html' as shopstab with context %}
+{% import 'macros/_encounters.html' as encounterstab with context %}
 
 {% block content %}
 
 {{ nav.fullnav() }}
 
 <div class="tabs">
-    <ul class="tabs__list has-centered" id="tab-titles">
-        <li id="reference-tab-title">
+    <ul class="tabs__list has-centered">
+        <li data-target="reference-tab">
             <a>
                 <iconify-icon icon="ph:book-fill"></iconify-icon>
                 Reference
             </a>
         </li>
-        <li id="npc-tab-title">
+        <li data-target="npc-tab">
             <a>
                 <iconify-icon icon="ph:person-fill"></iconify-icon>
                 NPC Generator
             </a>
         </li>
-        <li id="shop-tab-title">
+        <li data-target="shop-tab">
             <a>
                 <iconify-icon icon="ant-design:shop-filled"></iconify-icon>
                 Shop Generator
             </a>
         </li>
-        <li id="encounter-tab-title">
+        <li data-target="encounter-tab">
             <a>
                 <iconify-icon icon="mdi:sword-fight"></iconify-icon>
                 Encounter Generator
             </a>
         </li>
         <li id="statcard-clear">
-            <a class="button">
+            <a class="button is-small">
                 Clear Stat Cards
             </a>
         </li>
@@ -41,128 +45,21 @@
 
 <div class="row">
     <div class="column is-3">
-        <div class="row" id="generator-tabs">
-            <div class="column is-full {% if session.get('page', 'reference') != 'reference' %} is-hidden {% endif %}"
+        <div class="row">
+            <div class="column tab-panel is-full {% if session.get('page', 'reference') != 'reference' %} is-hidden {% endif %}"
                 id="reference-tab">
-                <div class="row is-vertical">
-                    <div class="column">
-                        <h2> Reference </h2>
-                        <form id="reference-search">
-                            <label>Category</label>
-                            <div class="is-select">
-                                <select name="category" id="category">
-                                    <option value="Monster" {% if category=="Monster" %} selected {% endif %}>
-                                        Monsters
-                                    </option>
-                                    <option value="Item" {% if category=="Item" %} selected {% endif %}>
-                                        Items
-                                    </option>
-                                    <option value="Spell" {% if category=="Spell" %} selected {% endif %}>
-                                        Spells
-                                    </option>
-                                    <option value="Character" {% if category=="Character" %} selected {% endif %}>
-                                        Characters
-                                    </option>
-                                    <option value="Shop" {% if category=="Shop" %} selected {% endif %}>
-                                        Shops
-                                    </option>
-                                </select>
-                            </div>
-                            <label>Search</label>
-                            <input name="search" id="search-input" type="text">
-                        </form>
-                    </div>
-                    <div class="column" id="search-results-container">
-                        <div class="accordion">
-                            <ul class="accordion__list" id="search-results" style>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                {{referencetab.panel()}}
             </div>
-            <div class="column is-full {% if session['page'] != 'npc' %} is-hidden {% endif %}" id="npc-tab">
-                <div class="panel">
-                    <div class="row is-vertical">
-                        <div class="column">
-                            <button class="button is-primary" id="generate-npc">Generate NPC</button>
-                            <h4>Canon NPCs</h4>
-                            {% for npc in npcs %}
-                            {% if npc.canon %}
-                            <li class="accordion__item statcard-item" data-pk="{{npc.pk}}" data-category="NPC">
-                                <div class="row">
-                                    <div class="column">
-                                        <a href="#" class="accordion__title statcard-view">
-                                            {{npc.name}}
-                                        </a>
-                                    </div>
-                                    <div class="column is-shrink">
-                                        <a href="#" class="button__close item-delete"></a>
-                                    </div>
-                                </div>
-                            </li>
-                            {% endif %}
-                            {% endfor %}
-                        </div>
-                        {% if npcs %}
-                        <div class="column" id="npc-list-container">
-                            <h4>Free NPCs</h4>
-                            <div class="accordion">
-                                <ul class="accordion__list" id="npc-list">
-                                    {% for npc in npcs %}
-                                    {% if not npc.canon %}
-                                    <li class="accordion__item statcard-item" data-pk="{{npc.pk}}" data-category="NPC">
-                                        <div class="row">
-                                            <div class="column">
-                                                <a href="#" class="accordion__title statcard-view">
-                                                    {{npc.name}}
-                                                </a>
-                                            </div>
-                                            <div class="column is-shrink">
-                                                <a href="#" class="button__close item-delete"></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="column tab-panel is-full {% if session['page'] != 'npc' %} is-hidden {% endif %}" id="npc-tab">
+                {{npcstab.panel()}}
             </div>
-            <div class="column is-full {% if session['page'] != 'shop' %} is-hidden {% endif %}" id="shop-tab">
-                <div class="panel">
-                    <div class="row">
-                        <div class="column">
-                            <h2>Shop Generator</h2>
-                            <button class="button is-primary" id="generate-shop">Generate Shop</button>
-                        </div>
-                        <div class="column" id="shop-list-container">
-                            <div class="accordion">
-                                <ul class="accordion__list" id="shop-list" style>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="column tab-panel is-full {% if session['page'] != 'shop' %} is-hidden {% endif %}"
+                id="shop-tab">
+                {{shopstab.panel()}}
             </div>
-            <div class="column is-full {% if session['page'] != 'encounter' %} is-hidden {% endif %}"
+            <div class="column tab-panel is-full {% if session['page'] != 'encounter' %} is-hidden {% endif %}"
                 id="encounter-tab">
-                <div class="panel">
-                    <div class="row">
-                        <div class="column">
-                            <h2>Encounter Generator</h2>
-                            <button class="button is-primary" id="generate-encounter">Generate Encounter</button>
-                        </div>
-                        <div class="column" id="encounter-list-container">
-                            <div class="accordion">
-                                <ul class="accordion__list" id="encounter-list" style>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{encounterstab.panel()}}
             </div>
         </div>
     </div>

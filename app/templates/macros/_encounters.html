@@ -1,0 +1,47 @@
+{% macro panel(info) -%}
+<div class="panel">
+    <div class="row">
+        <div class="column">
+            <h2>Encounter Generator</h2>
+            <button class="button is-primary" id="generate-encounter">Generate Encounter</button>
+        </div>
+        <div class="column" id="encounter-list-container">
+            <div class="accordion">
+                <ul class="accordion__list" id="encounter-list" style>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{%- endmacro %}
+
+{% macro statblock(info) -%}
+<form>
+    <div class="panel">
+        <div class="row is-vertical encountercard" data-category="Encounter" data-pk="{{info['pk']}}">
+            <div class="column">
+                <h1>Combatants</h1>
+                <ul>
+                    {% for combatant in info['enemies'] %}
+                    <li>{{combatant}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="column">
+                <h3>Loot</h3>
+                <ul>
+                    {% for loot in info['loot'] %}
+                    <li>{{loot}}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="column">
+                <h3>Notes</h3>
+                <textarea id="encounter-notes">
+                {{info.get('notes', '')}}
+            </textarea>
+            </div>
+        </div>
+    </div>
+</form>
+{%- endmacro %}

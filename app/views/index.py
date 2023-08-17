@@ -1,10 +1,8 @@
 # Built-In Modules
 from autonomous import log
 from celery.result import AsyncResult
-from dmtoolkit import DMTools
-from models import Player, Encounter, Monster, Spell, Item, Shop
 from models.npc import NPC
-from tasks import npcgentask, imagegentask, ddbtask, watask
+from tasks import npcgentask, imagegentask
 from utils import import_model_from_str, get_object
 
 # external Modules
@@ -18,9 +16,6 @@ index_page = Blueprint("index", __name__)
 def index():
     context = {
         "npcs": NPC.all(),
-        "pcs": Player.all(),
-        "shops": Shop.all(),
-        "encounters": Encounter.all(),
     }
     session["page"] = "npc"
     # log(context)
@@ -30,49 +25,6 @@ def index():
 ###############################################################################################
 #                                            API                                              #
 ###############################################################################################
-@index_page.route("/ddbdata", methods=("POST",))
-def ddbdata():
-    """
-    generates a random NPC using AI
-    """
-    task = ddbtask.delay(**request.json)
-    return {"results": task.id}
-
-
-@index_page.route("/npcgen", methods=("POST",))
-def npcgen():
-    """
-    generates a random NPC using AI
-    """
-    task = npcgentask.delay(**request.json)
-    return {"results": task.id}
-
-
-@index_page.route("/lootgen", methods=("POST",))
-def lootgen():
-    """
-    generates random loot using AI
-    """
-    # task = lootgentask.delay(**request.json)
-    # return {"results": task.id}
-
-
-@index_page.route("/encountergen", methods=("POST",))
-def encountergen():
-    """
-    generates a random encounter using AI
-    """
-    # task = encountergentask.delay(**request.json)
-    # return {"results": task.id}
-
-
-@index_page.route("/encountergen", methods=("POST",))
-def shopgen():
-    """
-    generates a random shop using AI
-    """
-    # task = shopgentask.delay(**request.json)
-    # return {"results": task.id}
 
 
 @index_page.route("/imagegen", methods=("POST",))
@@ -87,6 +39,14 @@ def imagegen():
     log(f"task id:{task.id}")
     return {"results": task.id}
 
+
+# @index_page.route("/lootgen", methods=("POST",))
+# def lootgen():
+#     """
+#     generates random loot using AI
+#     """
+#     # task = lootgentask.delay(**request.json)
+#     # return {"results": task.id}
 
 # ///////////////////////////////////////////////////////////////////
 
@@ -116,14 +76,73 @@ def statblock():
     return {"results": statblock} if statblock else {"results": ""}
 
 
-@index_page.route(rule="/updatecanon", methods=("GET",))
-def update_canon():
+###############################################################################################
+#                                            Tasks                                            #
+###############################################################################################
+
+
+@index_page.route("/checktask", methods=("POST",))
+def checktask():
+    log(request.json)
+    task_result = "invalid task id"
+    if "id" in request.json:
+        task = AsyncResult(request.json.get("id"))
+        task_result = {"task_id": task.id, "task_status": task.status}
+        task_result["task_result"] = task.get() if task.status == "SUCCESS" else None
+        log(**task_result)
+    return {"results": task_result}
+
+
+###############################################################################################
+#                                            NPCs                                              #
+###############################################################################################
+
+
+@index_page.route("/npc", methods=("GET",))
+def npc(pk):
     session["page"] = "npc"
-    return {"results": NPC.pull_canon_updates()}
+    if request.args.get("pk"):
+        obj = NPC.get(int(request.json.get("pk")))
+        context = obj.serialize() if obj else None
+    else:
+        context = NPC.all()
+    return {"results": context}
 
 
-@index_page.route("/updates", methods=("POST",))
-def updates():
+@index_page.route(rule="/canonupdates", methods=("GET",))
+def npc_updates_from_canon():
+    session["page"] = "npc"
+    context = [obj.serialize() for obj in NPC.update_npc_list()]
+    return {"results": context}
+
+
+@index_page.route("/npcgen", methods=("POST",))
+def npcgen():
+    """
+    generates a random NPC using AI
+    """
+    task = npcgentask.delay(**request.json)
+    return {"results": task.id}
+
+
+@index_page.route("/npc-create", methods=("POST",))
+def npccreate():
+    if wjs_id := request.json.get("wikijs_id"):
+        if npc_obj := NPC.search(wikijs_id=int(wjs_id)):
+            obj = npc_obj[0]
+        else:
+            obj = NPC.create_npc_from_canon(wjs_id)
+    else:
+        obj = NPC(**request.json)
+    obj.save()
+    context = obj.serialize()
+    log(context)
+    return {"results": context}
+
+
+@index_page.route("/npc-updates", methods=("POST",))
+def npcupdates():
+    session["page"] = "npc"
     # Parse Request
     # log(request.json)
     inventory = []
@@ -132,15 +151,15 @@ def updates():
     resistances = []
     spells = []
     for k, v in request.json.items():
-        if k.startswith("inventory-"):
+        if k.startswith("inventory-") and v:
             inventory.append(v)
-        elif k.startswith("personality-"):
+        elif k.startswith("personality-") and v:
             personality.append(v)
-        elif k.startswith("resitances-"):
+        elif k.startswith("resitances-") and v:
             resistances.append(v)
-        elif k.startswith("features-"):
+        elif k.startswith("features-") and v:
             features.append(v)
-        elif k.startswith("spells-"):
+        elif k.startswith("spells-") and v:
             spells.append(v)
     # log(inventory, personality, resistances, features, spells)
 
@@ -163,17 +182,16 @@ def updates():
     obj = get_object(obj_data)
 
     # update canon
-    log(obj.canon)
     if obj.canon:
-        obj.update_canon()
-    elif obj.wikijs_id:
+        obj.push_npc_to_canon()
+    elif not obj.canon and obj.wikijs_id:
         obj.remove_from_canon()
     obj.save()
-    return {"results": obj.statblock()}
+    return {"results": obj.serialize()}
 
 
-@index_page.route("/delete", methods=("POST",))
-def delete():
+@index_page.route("/npc-delete", methods=("POST",))
+def npcdelete():
     # log(request.json)
     result = None
     # log(category, pk)
@@ -184,59 +202,3 @@ def delete():
         result = f"Unexpected Error: {e}"
 
     return {"results": result}
-
-
-###############################################################################################
-#                                            Tasks                                            #
-###############################################################################################
-
-
-@index_page.route("/checktask", methods=("POST",))
-def checktask():
-    log(request.json)
-    task_result = "invalid task id"
-    if "id" in request.json:
-        task = AsyncResult(request.json.get("id"))
-        task_result = {"task_id": task.id, "task_status": task.status}
-        task_result["task_result"] = task.get() if task.status == "SUCCESS" else None
-        log(**task_result)
-    return {"results": task_result}
-
-
-###############################################################################################
-#                                            NPC                                              #
-###############################################################################################
-@index_page.route("/npc", methods=("POST",))
-def npc():
-    session["page"] = "npc"
-    if request.json.get("pk"):
-        obj = NPC.get(request.json.get("pk"))
-        obj = obj.serialize() if obj else None
-    else:
-        obj = [npc.serialize() for npc in NPC.all()]
-
-    return {"results": obj}
-
-
-###############################################################################################
-#                                            Shop                                             #
-###############################################################################################
-@index_page.route("/shops", methods=("GET", "POST"))
-def shop():
-    session["page"] = "shop"
-    return {"results": "success"}
-
-
-###############################################################################################
-#                                            Encounter                                        #
-###############################################################################################
-
-
-@index_page.route("/encounter", methods=("GET", "POST"))
-def encounter(pk=None):
-    session["page"] = "encounter"
-    if request.form.get("pk"):
-        log(request.form.get("pk"))
-    if pk:
-        result = Encounter.get(pk)
-    return result.serialize()

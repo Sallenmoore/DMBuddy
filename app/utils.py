@@ -3,7 +3,6 @@ import importlib
 import os
 import json
 import requests
-from markdownify import markdownify
 
 
 def import_model_from_str(model, module=None):
@@ -64,8 +63,8 @@ class WikiJSAPI:
         response = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query, "variables": variables})
         # log(response.text)
         results = response.json()["data"]["pages"]["list"]
-        pages = [cls.get_page(p["id"]) for p in results]
-        return pages
+        # pages = [cls.get_page(p["id"]) for p in results]
+        return results
 
     @classmethod
     def get_page(cls, id):
@@ -188,7 +187,7 @@ class WikiJSAPI:
         # log(query)
         # log(variables)
         res = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query, "variables": variables})
-        # log(res.text)
+        log(res.text)
         wikijs_id = res.json()["data"]["pages"]["create"]["page"]["id"]
         # log(wikijs_id)
         return int(wikijs_id)

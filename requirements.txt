@@ -37,11 +37,9 @@ celery
 
 ##### Parsing #####
 
-marko
-markdownify
 pypandoc
 dateparser
-markdown
+markdown-to-json
 
 ##### Utility #####
 

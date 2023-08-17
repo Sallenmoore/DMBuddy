@@ -34,11 +34,6 @@ def imagegentask(model, pk, module=None):
 
 
 @shared_task()
-def ddbtask(dnd_id):
-    return DnDBeyondAPI.get_character(dnd_id)
-
-
-@shared_task()
 def watask(*args, **kwargs):
     return kwargs
 

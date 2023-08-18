@@ -1,0 +1,10 @@
+{% macro panel()-%}
+<h3>NPC Chat</h3>
+<h4 id="chat-name"></h4>
+<form id="chat-form" data-pk="">
+    <textarea class="has-bg-light" name="pc-chat" id="pc-chat"></textarea>
+    <button class="button is-small" type="submit">Send</button>
+</form>
+<div class="row is-vertical" id="npc-chat">
+</div>
+{%- endmacro %}

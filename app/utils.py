@@ -188,6 +188,6 @@ class WikiJSAPI:
         # log(variables)
         res = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query, "variables": variables})
         log(res.text)
-        wikijs_id = res.json()["data"]["pages"]["create"]["page"]["id"]
+        wikijs_id = int(res.json()["data"]["pages"]["create"]["page"]["id"])
         # log(wikijs_id)
         return int(wikijs_id)

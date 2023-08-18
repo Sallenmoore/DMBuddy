@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   //=== configure autojs
-  // autojs.configure({
-  //   textarea_autoheight: true, #default: true
-  // });
+  autojs.configure();
   //=== Initialize widgets
   new Tab();
   //=== do some code stuff...
@@ -26,8 +24,33 @@ function bindEvents() {
   add_id_event('generate-npc', 'click', npcgen);
   add_id_event('update-canon-npc', 'click', update_canon_npc);
 
+  add_id_event('chat-form', 'submit', npcchat);
+
+  // Element Tester
+  //var loader = new Loader('tester');
 }
 
+/////////////////////////////////////// Chat Functions //////////////////////////////////////////
+
+function npcchat(e) {
+  e.preventDefault();
+  var message = get_object_by_id('pc-chat').value;
+  var pk = get_object_by_id('chat-form').dataset.pk;
+  var loader = new Loader('chat-form');
+  post_data("npcchat", { "pk": pk, "message": message }, (data) => {
+    loader.remove();
+    var npcchat = document.createElement('div');
+    npcchat.classList.add('column');
+
+    var response = document.createElement('div');
+    response.innerHTML = data.results;
+    response.classList.add('chat-message', "panel", "has-bg-dark");
+    npcchat.appendChild(response);
+    prepend_to_id('npc-chat', npcchat);
+  });
+}
+
+/////////////////////////////////////// TASK Functions //////////////////////////////////////////
 
 function getTaskStatus(taskID, iters) {
   var loader = new Loader();
@@ -73,8 +96,10 @@ function dndsearch() {
   let keyword = this.value;
   if (keyword.length > 2) {
     var category = get_object_by_id("category").value;
+    var loader = new Loader("search-results");
     post_data("search", { category: category, keyword: keyword }, (data) => {
       results.innerHTML = "";
+      loader.remove();
       data["results"].forEach((el) => {
         let new_entry = get_object_by_id("search-result-item-template").cloneNode(true);
         new_entry.removeAttribute("id");
@@ -90,24 +115,15 @@ function dndsearch() {
 }
 
 function update_canon_npc() {
+  var loader = new Loader("npc-tab");
   get_data("canonupdates", (data) => {
+    loader.remove();
     for (let i = 0; i < data.results.length; i++) {
       let el = data.results[i];
 
       var li = get_object_by_id("search-result-item-template").cloneNode(true);
       li.querySelector('a').innerHTML = el["name"];
-      get_object_by_id('add-npc-list').appendChild(li);
-
-      add_event(li, 'click', () => {
-        let obj = { "wikijs_id": el.wikijs_id };
-        post_data("npc-create", obj, (data) => {
-          console.log(data);
-          li.dataset.pk = data.results.pk;
-          li.dataset.category = "NPC";
-          get_object_by_id('canon-npc-list').appendChild(li);
-          add_event(el, 'click', statcard);
-        });
-      });
+      get_object_by_id('canon-npc-list').appendChild(li);
     }
   });
 }
@@ -119,7 +135,7 @@ function updatestats() {
   obj['category'] = form.querySelector('.statblock').dataset.category;
   obj['canon'] = form.querySelector('input[type=checkbox]').checked;
   console.log(obj);
-  var loader = new Loader();
+  var loader = new Loader(form.querySelector('.statblock').id);
   post_data("npc-updates", obj, (data) => {
     loader.remove();
     console.log(data);
@@ -142,20 +158,23 @@ function updatestats() {
   });
 }
 
+function updateconnection() {
+  var conn_pk = this.value;
+  hide(get_objects_by_class('npc-connection'));
+  let pk = this.closest('.statcard').dataset.pk;
+  get_object_by_id('#npc-connection-' + pk + '-' + conn_pk).dataset.pk;
+}
+
 function statcard() {
   var item = this.closest('.statcard-item');
   let pk = item.dataset.pk;
   let category = item.dataset.category;
-  let wikijs_id = item.dataset.wikijs_id;
-  getstatcard(pk, category, wikijs_id);
-}
-
-function getstatcard(pk, category) {
-  var loader = new Loader();
+  var name = item.querySelector('.statcard-view').innerHTML;
   let old_sc = get_object_by_id('pcstatblock-' + pk);
   if (old_sc) {
     old_sc.remove();
   }
+  var loader = new Loader('statblock');
   post_data("statblock", { pk: pk, category: category }, (data) => {
     loader.remove();
     let div = document.createElement('div');
@@ -169,9 +188,12 @@ function getstatcard(pk, category) {
     if (data["results"]) {
       //div.classList.add('is-half');
       div.innerHTML = data["results"];
-      autojs.rebind();
       add_class_event('generate-image', 'click', imggen);
       add_class_event('save-updates', 'click', updatestats);
+      add_class_event('npc-connections-list', 'change', updateconnection);
+      get_object_by_id("chat-form").dataset.pk = pk;
+      get_object_by_id("chat-name").innerHTML = name;
+      autojs.rebind();
     } else {
       div.innerHTML = "No statblock found";
     }

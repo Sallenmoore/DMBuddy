@@ -5,6 +5,7 @@ from dmtoolkit import DMTools
 from utils import WikiJSAPI
 import math
 import markdown_to_json
+from autonomous.apis import OpenAI
 import random
 
 # external Modules
@@ -18,6 +19,7 @@ class NPC(DnDCharacter):
         "wa_article_id": None,
         "wikijs_id": None,
         "level": 2,
+        "connections": {},
     }
 
     def __init__(self, **kwargs):
@@ -37,6 +39,35 @@ class NPC(DnDCharacter):
         # log(self.__dict__)
         return snippet(self.serialize())
 
+    def update_connections(self, conns):
+        for npc in conns:
+            if npc.pk not in self.connections:
+                self.connections[npc.pk] = {
+                    "name": npc.name,
+                    "relationship": random.choice(["friend", "aquaintance", "enemy", "neutral", "strangers"]),
+                }
+        self.save()
+        # log(self.connections)
+
+    def chat(self, message):
+        primer = "You are playing the role of a D&D NPC talking to a PC."
+        prompt = f"""
+As D&D NPC matching the following description:
+
+PERSONALITY: {", ".join(self.personality)}
+
+DESCRIPTION: {self.desc}
+
+BACKSTORY: {self.backstory}
+
+Respond to the player's message below as the above described character:
+
+{message}
+        """
+        response = OpenAI().generate_text(prompt, primer)
+        log(response)
+        return response
+
     @classmethod
     def generate(cls, *args, **kwargs):
         npc = DMTools.generatenpc()
@@ -54,32 +85,23 @@ class NPC(DnDCharacter):
         for page in pages:
             page_id = int(page["id"])
             obj = None
+            prexisted = False
             if results := cls.search(wikijs_id=page_id):
                 obj = results[0]
+                prexisted = True
             elif results := cls.search(name=page["title"]):
                 obj = results[0]
+                prexisted = True
             else:
                 obj = cls(name=page["title"])
             obj.wikijs_id = page_id
+            obj.canon = True
+            page_details = WikiJSAPI.get_page(page_id)
+            cls.from_markdown(page_details["content"], obj)
             obj.save()
-            updated.append(obj)
-        # log(updated)
+            if not prexisted:
+                updated.append(obj)
         return updated
-
-    @classmethod
-    def create_npc_from_canon(cls, wjsid):
-        try:
-            page = WikiJSAPI.get_page(int(wjsid))
-            obj = cls.from_markdown(page["content"])
-        except Exception as e:
-            log(e)
-            raise e
-
-        obj.canon = True
-        obj.wikjs_id = int(wjsid)
-        obj.save()
-        # log(obj)
-        return obj
 
     def push_npc_to_canon(self):
         try:
@@ -104,20 +126,20 @@ class NPC(DnDCharacter):
             return result
 
     @classmethod
-    def from_markdown(cls, content):
+    def from_markdown(cls, content, obj=None):
         result = markdown_to_json.dictify(content).popitem()
         # log(result)
         data = result[1]
         # log(data)
         obj_data = {
-            "name": result[0],
-            "backstory": data["Backstory"],
-            "str": data["Attributes"][0].split(":")[1],
-            "dex": data["Attributes"][1].split(":")[1],
-            "con": data["Attributes"][2].split(":")[1],
-            "int": data["Attributes"][3].split(":")[1],
-            "wis": data["Attributes"][4].split(":")[1],
-            "cha": data["Attributes"][5].split(":")[1],
+            "name": result[0].strip(),
+            "backstory": data["Backstory"].strip(),
+            "str": data["Attributes"][0].split(":")[1].strip(),
+            "dex": data["Attributes"][1].split(":")[1].strip(),
+            "con": data["Attributes"][2].split(":")[1].strip(),
+            "int": data["Attributes"][3].split(":")[1].strip(),
+            "wis": data["Attributes"][4].split(":")[1].strip(),
+            "cha": data["Attributes"][5].split(":")[1].strip(),
             "features": data["Actions and Features"] or {},
             "spells": data["Spells"],
             "wealth": data["Assets"][0].split(":")[1],
@@ -126,7 +148,17 @@ class NPC(DnDCharacter):
             # 'occupation': data['occupation'],
         }
         # log(obj_data)
-        obj = cls(**obj_data)
+        obj_data["str"] = int(obj_data["str"]) if obj_data["str"] else None
+        obj_data["dex"] = int(obj_data["dex"]) if obj_data["dex"] else None
+        obj_data["con"] = int(obj_data["con"]) if obj_data["con"] else None
+        obj_data["int"] = int(obj_data["int"]) if obj_data["int"] else None
+        obj_data["wis"] = int(obj_data["wis"]) if obj_data["wis"] else None
+        obj_data["cha"] = int(obj_data["cha"]) if obj_data["cha"] else None
+
+        if obj:
+            obj.__dict__.update(obj_data)
+        else:
+            obj = cls(**obj_data)
         return obj
 
     def to_markdown(self):

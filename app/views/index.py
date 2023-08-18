@@ -14,8 +14,11 @@ index_page = Blueprint("index", __name__)
 
 @index_page.route("/", methods=("GET",))
 def index():
+    npcs = NPC.all()
+    for npc in npcs:
+        npc.update_connections(npcs)
     context = {
-        "npcs": NPC.all(),
+        "npcs": npcs,
     }
     session["page"] = "npc"
     # log(context)
@@ -109,6 +112,17 @@ def npc(pk):
     return {"results": context}
 
 
+@index_page.route(rule="/npcchat", methods=("POST",))
+def npcchat():
+    session["page"] = "npc"
+    message = request.json.get("message")
+    log(message)
+    pk = request.json.get("pk")
+    if pk and message:
+        obj = NPC.get(int(pk))
+    return {"results": obj.chat(message)}
+
+
 @index_page.route(rule="/canonupdates", methods=("GET",))
 def npc_updates_from_canon():
     session["page"] = "npc"
@@ -127,13 +141,7 @@ def npcgen():
 
 @index_page.route("/npc-create", methods=("POST",))
 def npccreate():
-    if wjs_id := request.json.get("wikijs_id"):
-        if npc_obj := NPC.search(wikijs_id=int(wjs_id)):
-            obj = npc_obj[0]
-        else:
-            obj = NPC.create_npc_from_canon(wjs_id)
-    else:
-        obj = NPC(**request.json)
+    obj = NPC(**request.json)
     obj.save()
     context = obj.serialize()
     log(context)

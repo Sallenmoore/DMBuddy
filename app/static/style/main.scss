@@ -11,6 +11,7 @@ $grid-sizes: repeat(20, 1fr) !default; //
 //////////////////////////////////////////////
 
 @import "autostyle/all";
+@import url("https://fonts.googleapis.com/css2?family=Kalam:wght@300&display=swap");
 
 option {
   color: $dark;
@@ -26,4 +27,10 @@ option {
     color: $primary;
     list-style: none;
   }
+}
+
+#npc-chat {
+  color: $light;
+  font-family: "Kalam", cursive;
+  font-size: 1.5rem;
 }

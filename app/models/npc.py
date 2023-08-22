@@ -49,32 +49,12 @@ class NPC(DnDCharacter):
         self.save()
         # log(self.connections)
 
-    def chat(self, message):
-        primer = "You are playing the role of a D&D NPC talking to a PC."
-        prompt = f"""
-As D&D NPC matching the following description:
-
-PERSONALITY: {", ".join(self.personality)}
-
-DESCRIPTION: {self.desc}
-
-BACKSTORY: {self.backstory}
-
-Respond to the player's message below as the above described character:
-
-{message}
-        """
-        response = OpenAI().generate_text(prompt, primer)
-        log(response)
-        return response
-
-    @classmethod
-    def generate(cls, *args, **kwargs):
-        npc = DMTools.generatenpc()
-        data = npc.serialize()
-        o = NPC(**data)
-        o.save()
-        return o
+    # @classmethod
+    # def generate(cls, *args, **kwargs):
+    #     npc = super().generate()
+    #     npc = NPC(**npc.serialize())
+    #     npc.save()
+    #     return npc
 
     @classmethod
     def update_npc_list(cls):

@@ -10,7 +10,18 @@ from utils import import_model_from_str
 def npcgentask(*args, **kwargs):
     result = NPC.generate()
     result.generate_image()
+    result.save()
     return result.serialize()
+
+
+@shared_task()
+def npcchattask(pk=None, message=None, **kwargs):
+    log(message)
+    if pk and message:
+        obj = NPC.get(int(pk))
+        obj.chat(message)
+        return {"results": obj.communication_summary}
+    return {"results": "Invalid request"}
 
 
 @shared_task()

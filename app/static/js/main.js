@@ -37,46 +37,52 @@ function npcchat(e) {
   var message = get_object_by_id('pc-chat').value;
   var pk = get_object_by_id('chat-form').dataset.pk;
   var loader = new Loader('chat-form');
-  post_data("npcchat", { "pk": pk, "message": message }, (data) => {
-    loader.remove();
-    var npcchat = document.createElement('div');
-    npcchat.classList.add('column');
-
-    var response = document.createElement('div');
-    response.innerHTML = data.results;
-    response.classList.add('chat-message', "panel", "has-bg-dark");
-    npcchat.appendChild(response);
-    prepend_to_id('npc-chat', npcchat);
+  var npcchat = get_object_by_id("npcchat-message");
+  post_data("npcchat", { "pk": pk, "message": message }, (task) => {
+    setTimeout(() => {
+      getTaskStatus(task.results, (res) => {
+        get_object_by_id("pc-chat").value = "";
+        npcchat.innerHTML = res.results.task_results.message;
+        var npcresponse = get_object_by_id("npcchat-response");
+        npcresponse.innerHTML = res.results.task_results.response;
+        var npcchat_summary = get_object_by_id("npcchat-summary");
+        npcchat_summary.innerHTML = res.results.task_results.summary;
+        loader.remove();
+      });
+    }, 3000);
   });
 }
 
 /////////////////////////////////////// TASK Functions //////////////////////////////////////////
 
-function getTaskStatus(taskID, iters) {
-  var loader = new Loader();
+function getTaskStatus(taskID, f = () => { console.log("Task Complete"); }) {
   post_data("checktask", { "id": taskID }, res => {
     // console.log(res);
     // console.log(res.results.task_id);
     // console.log(res.results.task_status);
     // console.log(res.results.task_results);
     // console.log(iters);
-    if (iters > 0 && res.results.task_status != 'SUCCESS' && res.results.task_status != 'FAILURE') {
-      setTimeout(() => getTaskStatus(taskID, iters - 1), 3000);
-      loader.remove();
+    if (res.results.task_status != 'SUCCESS' && res.results.task_status != 'FAILURE') {
+      setTimeout(() => {
+        getTaskStatus(taskID);
+      }, 3000);
+    } else {
+      f(res.results.task_results);
     }
-    //console.log(res.results);
+
   });
 }
 
-function task(task_name, task_data = {}) {
+function task(task_name, loader, task_data = {}) {
   post_data(task_name, task_data, (data) => {
     //console.log(data);
-    setTimeout(() => getTaskStatus(data.results, 7), 100);
+    setTimeout(() => getTaskStatus(data.results, (loader) => { loader.remove(); }), 100);
   });
 }
 
 function npcgen() {
-  task("npcgen");
+  var loader = new Loader('statblock');
+  task("npcgen", loader);
 }
 
 
@@ -169,7 +175,6 @@ function statcard() {
   var item = this.closest('.statcard-item');
   let pk = item.dataset.pk;
   let category = item.dataset.category;
-  var name = item.querySelector('.statcard-view').innerHTML;
   let old_sc = get_object_by_id('pcstatblock-' + pk);
   if (old_sc) {
     old_sc.remove();
@@ -187,12 +192,18 @@ function statcard() {
 
     if (data["results"]) {
       //div.classList.add('is-half');
-      div.innerHTML = data["results"];
+      div.innerHTML = data.results.statblock;
       add_class_event('generate-image', 'click', imggen);
       add_class_event('save-updates', 'click', updatestats);
       add_class_event('npc-connections-list', 'change', updateconnection);
-      get_object_by_id("chat-form").dataset.pk = pk;
-      get_object_by_id("chat-name").innerHTML = name;
+      get_object_by_id("chat-form").dataset.pk = data.results.obj.pk;
+      get_object_by_id("chat-name").innerHTML = data.results.obj.name;
+      get_object_by_id("pc-chat").value = "";
+      npcchat.innerHTML = data.results.obj.conversation_summary.message;
+      var npcresponse = get_object_by_id("npcchat-response");
+      npcresponse.innerHTML = data.results.obj.conversation_summary.response;
+      var npcchat_summary = get_object_by_id("npcchat-summary");
+      npcchat_summary.innerHTML = data.results.obj.conversation_summary.summary;
       autojs.rebind();
     } else {
       div.innerHTML = "No statblock found";

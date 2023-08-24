@@ -2,7 +2,7 @@
 from autonomous import log
 from celery.result import AsyncResult
 from models.npc import NPC
-from tasks import npcgentask, imagegentask
+from tasks import npcgentask, npcchattask, imagegentask
 from utils import import_model_from_str, get_object
 
 # external Modules
@@ -75,8 +75,7 @@ def statblock():
     # log(request.json)
     obj = get_object(request.json)
     # log(obj)
-    statblock = obj.statblock()
-    return {"results": statblock} if statblock else {"results": ""}
+    return {"results": {"statblock": obj.statblock(), "obj": obj.serialize()}} if statblock else {"results": ""}
 
 
 ###############################################################################################
@@ -112,17 +111,6 @@ def npc(pk):
     return {"results": context}
 
 
-@index_page.route(rule="/npcchat", methods=("POST",))
-def npcchat():
-    session["page"] = "npc"
-    message = request.json.get("message")
-    log(message)
-    pk = request.json.get("pk")
-    if pk and message:
-        obj = NPC.get(int(pk))
-    return {"results": obj.chat(message)}
-
-
 @index_page.route(rule="/canonupdates", methods=("GET",))
 def npc_updates_from_canon():
     session["page"] = "npc"
@@ -136,6 +124,13 @@ def npcgen():
     generates a random NPC using AI
     """
     task = npcgentask.delay(**request.json)
+    return {"results": task.id}
+
+
+@index_page.route(rule="/npcchat", methods=("POST",))
+def npcchat():
+    session["page"] = "npc"
+    task = npcchattask.delay(**request.json)
     return {"results": task.id}
 
 

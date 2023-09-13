@@ -1,14 +1,21 @@
-from autonomous import log
-from tasks import mocktask, npcgentask
 import time
-from celery.result import AsyncResult
+
 import pytest
+from autonomous import log
+from autonomous.tasks import AutoTasks
+from models import NPC
+from tasks import npcgentask
 
 
 def test_npcgen_task(app):
-    task = npcgentask.delay()
-    result = AsyncResult(task.id)
+    runner = AutoTasks()
+    result = runner.task(npcgentask)
     log(result.status)
-    result.ready()
-    assert "name" in result.get()
-    assert "backstory" in result.get()
+    while result.status != "finished":
+        log(result.status)
+        time.sleep(1)
+    log(result.status)
+    log(result.return_value)
+    npc = NPC(**result.return_value)
+    assert npc.name
+    assert npc.backstory

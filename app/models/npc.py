@@ -1,11 +1,8 @@
 from dmtoolkit.models.dndcharacter import Character as DnDCharacter
 from autonomous import log
-from autonomous import AutoModel
-from dmtoolkit import DMTools
 from utils import WikiJSAPI
 import math
 import markdown_to_json
-from autonomous.apis import OpenAI
 import random
 
 # external Modules
@@ -34,6 +31,7 @@ class NPC(DnDCharacter):
         self.hp = self.con * (random.randint(int(self.level / 2), self.level) + 1) if not self.hp and self.con else 0
         self.ac = self.dex + random.randint(self.level, self.level * 2) if not self.ac and self.dex else 0
 
+    ### methods
     def statblock(self):
         snippet = get_template_attribute("macros/_npc.html", "statblock")
         # log(self.__dict__)

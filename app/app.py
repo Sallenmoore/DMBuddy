@@ -1,10 +1,9 @@
 import os
-from flask import Flask
 
-from autonomous.assets import build_assets
-from autonomous.tasks import make_taskrunner
-from config import Config
 import filters
+from autonomous.assets import build_assets
+from config import Config
+from flask import Flask
 from views.index import index_page
 
 
@@ -25,9 +24,6 @@ def create_app():
 
     app.before_request(lambda: build_assets())
 
-    # - Tasks
-    make_taskrunner(app)
-
     #################################################################
     #                             ROUTES                            #
     #################################################################
@@ -37,7 +33,3 @@ def create_app():
     ######################################
     app.register_blueprint(index_page)
     return app
-
-
-############################ TASK RUNNER ###############################
-autotask = create_app().extensions["celery"]

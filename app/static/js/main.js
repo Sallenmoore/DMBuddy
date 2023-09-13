@@ -1,3 +1,5 @@
+var loader = new Loader('statblock');
+
 document.addEventListener("DOMContentLoaded", () => {
   //=== configure autojs
   autojs.configure();
@@ -36,11 +38,12 @@ function npcchat(e) {
   e.preventDefault();
   var message = get_object_by_id('pc-chat').value;
   var pk = get_object_by_id('chat-form').dataset.pk;
-  var loader = new Loader('chat-form');
+  loader.show('chat-form');
   var npcchat = get_object_by_id("npcchat-message");
   post_data("npcchat", { "pk": pk, "message": message }, (task) => {
     setTimeout(() => {
       getTaskStatus(task.results, (res) => {
+        console.log(res);
         get_object_by_id("pc-chat").value = "";
         npcchat.innerHTML = res.results.task_results.message;
         var npcresponse = get_object_by_id("npcchat-response");
@@ -55,7 +58,7 @@ function npcchat(e) {
 
 /////////////////////////////////////// TASK Functions //////////////////////////////////////////
 
-function getTaskStatus(taskID, f = () => { console.log("Task Complete"); }) {
+function getTaskStatus(taskID, f = (e = "Success") => { console.log(e); }) {
   post_data("checktask", { "id": taskID }, res => {
     // console.log(res);
     // console.log(res.results.task_id);
@@ -73,16 +76,16 @@ function getTaskStatus(taskID, f = () => { console.log("Task Complete"); }) {
   });
 }
 
-function task(task_name, loader, task_data = {}) {
+function task(task_name, task_data = {}) {
   post_data(task_name, task_data, (data) => {
     //console.log(data);
-    setTimeout(() => getTaskStatus(data.results, (loader) => { loader.remove(); }), 100);
+    setTimeout(() => getTaskStatus(data.results), 100);
   });
 }
 
 function npcgen() {
-  var loader = new Loader('statblock');
-  task("npcgen", loader);
+
+  task("npcgen");
 }
 
 
@@ -102,7 +105,7 @@ function dndsearch() {
   let keyword = this.value;
   if (keyword.length > 2) {
     var category = get_object_by_id("category").value;
-    var loader = new Loader("search-results");
+    loader.show("search-results");
     post_data("search", { category: category, keyword: keyword }, (data) => {
       results.innerHTML = "";
       loader.remove();
@@ -121,7 +124,7 @@ function dndsearch() {
 }
 
 function update_canon_npc() {
-  var loader = new Loader("npc-tab");
+  loader.show("npc-tab");
   get_data("canonupdates", (data) => {
     loader.remove();
     for (let i = 0; i < data.results.length; i++) {
@@ -141,7 +144,7 @@ function updatestats() {
   obj['category'] = form.querySelector('.statblock').dataset.category;
   obj['canon'] = form.querySelector('input[type=checkbox]').checked;
   console.log(obj);
-  var loader = new Loader(form.querySelector('.statblock').id);
+  loader.show(form.querySelector('.statblock').id);
   post_data("npc-updates", obj, (data) => {
     loader.remove();
     console.log(data);
@@ -179,7 +182,7 @@ function statcard() {
   if (old_sc) {
     old_sc.remove();
   }
-  var loader = new Loader('statblock');
+  loader.show('statblock');
   post_data("statblock", { pk: pk, category: category }, (data) => {
     loader.remove();
     let div = document.createElement('div');
@@ -199,6 +202,7 @@ function statcard() {
       get_object_by_id("chat-form").dataset.pk = data.results.obj.pk;
       get_object_by_id("chat-name").innerHTML = data.results.obj.name;
       get_object_by_id("pc-chat").value = "";
+      var npcchat = get_object_by_id("npcchat-message");
       npcchat.innerHTML = data.results.obj.conversation_summary.message;
       var npcresponse = get_object_by_id("npcchat-response");
       npcresponse.innerHTML = data.results.obj.conversation_summary.response;

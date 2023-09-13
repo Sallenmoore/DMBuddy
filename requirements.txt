@@ -3,8 +3,8 @@
 ##################################
 
 ##### Frameworks #####
-dmtoolkit >= 0.0.18
-autonomous-app >= 0.1.13
+dmtoolkit >= 0.0.19
+autonomous-app >= 0.1.25
 
 ##### Configuration and Documentation #####
 
@@ -30,7 +30,6 @@ gunicorn
 
 
 ##### Async ##### 
-celery
 
 ##### AI #####
 

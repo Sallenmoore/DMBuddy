@@ -1,13 +1,9 @@
-# Built-In Modules
 from autonomous import log
-from celery.result import AsyncResult
+from autonomous.tasks import AutoTasks
+from flask import Blueprint, render_template, request, session
 from models.npc import NPC
-from tasks import npcgentask, npcchattask, imagegentask
-from utils import import_model_from_str, get_object
-
-# external Modules
-from flask import Blueprint, render_template, request, session, redirect, url_for
-import os
+from tasks import imagegentask, npcchattask, npcgentask
+from utils import get_object, import_model_from_str
 
 index_page = Blueprint("index", __name__)
 
@@ -38,18 +34,13 @@ def imagegen():
     category = request.json.get("category")
     pk = int(request.json.get("pk"))
     log(category, pk)
-    task = imagegentask.delay(model=category, pk=pk)
-    log(f"task id:{task.id}")
+    obj = import_model_from_str(category).get(pk)
+    obj.task_running = True
+    obj.save()
+    runner = AutoTasks()
+    task = runner.task(imagegentask, model=category, pk=pk)
     return {"results": task.id}
 
-
-# @index_page.route("/lootgen", methods=("POST",))
-# def lootgen():
-#     """
-#     generates random loot using AI
-#     """
-#     # task = lootgentask.delay(**request.json)
-#     # return {"results": task.id}
 
 # ///////////////////////////////////////////////////////////////////
 
@@ -75,7 +66,11 @@ def statblock():
     # log(request.json)
     obj = get_object(request.json)
     # log(obj)
-    return {"results": {"statblock": obj.statblock(), "obj": obj.serialize()}} if statblock else {"results": ""}
+    return (
+        {"results": {"statblock": obj.statblock(), "obj": obj.serialize()}}
+        if statblock
+        else {"results": ""}
+    )
 
 
 ###############################################################################################
@@ -86,13 +81,7 @@ def statblock():
 @index_page.route("/checktask", methods=("POST",))
 def checktask():
     log(request.json)
-    task_result = "invalid task id"
-    if "id" in request.json:
-        task = AsyncResult(request.json.get("id"))
-        task_result = {"task_id": task.id, "task_status": task.status}
-        task_result["task_result"] = task.get() if task.status == "SUCCESS" else None
-        log(**task_result)
-    return {"results": task_result}
+    return {"results": get_object(request.json).status}
 
 
 ###############################################################################################
@@ -123,14 +112,20 @@ def npcgen():
     """
     generates a random NPC using AI
     """
-    task = npcgentask.delay(**request.json)
+    runner = AutoTasks()
+    task = runner.task(npcgentask)
     return {"results": task.id}
 
 
 @index_page.route(rule="/npcchat", methods=("POST",))
 def npcchat():
     session["page"] = "npc"
-    task = npcchattask.delay(**request.json)
+    pk = int(request.json.get("pk"))
+    message = request.json.get("message")
+    obj = NPC.get(pk)
+    obj.save()
+    runner = AutoTasks()
+    task = runner.task(npcchattask, pk=pk, message=message)
     return {"results": task.id}
 
 
@@ -171,7 +166,13 @@ def npcupdates():
     for k, v in request.json.items():
         if k in ["pk", "age", "wis", "str", "cha", "int", "dex", "con", "hp", "ac"]:
             obj_data[k] = int(v)
-        elif k.split("-")[0] not in ["inventory", "personality", "resistances", "inventory", "spells"]:
+        elif k.split("-")[0] not in [
+            "inventory",
+            "personality",
+            "resistances",
+            "inventory",
+            "spells",
+        ]:
             obj_data[k] = v
     obj_data["inventory"] = inventory
     obj_data["personality"] = personality

@@ -6,7 +6,7 @@ all: test clean run
 include .env
 export
 
-APP_NAME?=app
+APP_NAME?=dmbuddy
 CONTAINERS=$$(sudo docker ps --filter "name=${APP_NAME}" -q)
 
 ###### BUILD and RUN #######
@@ -21,9 +21,9 @@ run:
 clean:
 	sudo docker ps -a
 	-docker-compose down --remove-orphans
-	-sudo docker kill $(CONTAINERS)
-
+	
 deepclean: clean
+	-sudo docker kill $(CONTAINERS)
 	-sudo docker container prune -f
 	-sudo docker image prune -f
 	-sudo docker network prune -f
@@ -31,16 +31,16 @@ deepclean: clean
 
 ###### TESTING #######
 
-debug: run
-	docker logs -f $(APP_NAME)
+###### TESTING #######
+
+debug: clean run
+	docker-compose logs -f
 
 cleandebug: clean build debug
 
-tests: clean build run
+tests: 
 	docker-compose up --build -d
-	docker exec -it $(APP_NAME) python -m pytest --cov=app -rx -l -x --log-level=INFO --no-cov-on-fail
+	docker-compose logs
+	docker exec -it $(APP_NAME) python -m pytest --cov=app -rP -rx -l -x --log-level=INFO --no-cov-on-fail
 
-RUNTEST?="test_"
-test:
-	docker-compose up --build -d
-	docker exec -it $(APP_NAME) python -m pytest --log-level=INFO -rx -l -x -k $(RUNTEST)
+cleantests: clean build tests

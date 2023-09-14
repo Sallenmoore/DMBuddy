@@ -12,11 +12,10 @@ def npcgentask(*args, **kwargs):
 
 
 def npcchattask(pk=None, message=None, **kwargs):
-    log(message)
+    log(pk, message)
     if pk and message:
-        obj = NPC.get(int(pk))
+        obj = NPC.get(pk)
         obj.chat(message)
-        obj.task_running = False
         return {"pk": obj.pk}
 
 
@@ -43,9 +42,6 @@ def imagegentask(model, pk, module=None):
 
 def watask(*args, **kwargs):
     pass
-
-
-()
 
 
 def wikijstask(*args, **kwargs):

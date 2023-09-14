@@ -17,10 +17,9 @@ def get_object(data, model_str=None, module_str=None):
     obj = None
     if model_str:
         model = import_model_from_str(model_str, module=module_str)
-        obj = model.get(pk=int(data))
+        obj = model.get(pk=data)
     elif data.get("pk") and data.get("category"):
         model = import_model_from_str(data.pop("category"))
-        data["pk"] = int(data["pk"])
         obj = model(**data)
 
     return obj
@@ -32,7 +31,10 @@ class WorldAnvilAPI:
     world = os.environ.get("WORLD_ANVIL_WORLD")
 
     def update_character(self, data):
-        result = requests.post(f"{self.api_url}/article", data={"world": self.world, "template": "person", **data})
+        result = requests.post(
+            f"{self.api_url}/article",
+            data={"world": self.world, "template": "person", **data},
+        )
         return result.json()
 
 
@@ -60,7 +62,11 @@ class WikiJSAPI:
             """
         variables = json.dumps({"tags": tags})
         # log(query)
-        response = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query, "variables": variables})
+        response = requests.post(
+            WikiJSAPI.api_url,
+            headers=cls.headers,
+            json={"query": query, "variables": variables},
+        )
         # log(response.text)
         results = response.json()["data"]["pages"]["list"]
         # pages = [cls.get_page(p["id"]) for p in results]
@@ -69,7 +75,6 @@ class WikiJSAPI:
     @classmethod
     def get_page(cls, id):
         # log(query)
-        id = int(id)
         query = f"""
         query{{
             pages{{
@@ -83,8 +88,14 @@ class WikiJSAPI:
             }}
         }}
         """
-        res = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query})
-        return res.json()["data"]["pages"]["single"] if res.json()["data"]["pages"]["single"] else None
+        res = requests.post(
+            WikiJSAPI.api_url, headers=cls.headers, json={"query": query}
+        )
+        return (
+            res.json()["data"]["pages"]["single"]
+            if res.json()["data"]["pages"]["single"]
+            else None
+        )
 
     @classmethod
     def remove_page(cls, id):
@@ -104,7 +115,11 @@ class WikiJSAPI:
         }
         """
         variables = json.dumps({"id": id})
-        res = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query, "variables": variables})
+        res = requests.post(
+            WikiJSAPI.api_url,
+            headers=cls.headers,
+            json={"query": query, "variables": variables},
+        )
         # log(res.text)
         return res.json()["data"]["pages"]["delete"]["responseResult"]["succeeded"]
 
@@ -124,7 +139,9 @@ class WikiJSAPI:
             }
             """
         # log(query)
-        response = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query})
+        response = requests.post(
+            WikiJSAPI.api_url, headers=cls.headers, json={"query": query}
+        )
         # log(response.text)
         results = response.json()["data"]["pages"]["list"]
 
@@ -132,7 +149,7 @@ class WikiJSAPI:
             for p in results:
                 # log(title, p)
                 if title == p["title"]:
-                    return int(p["id"])
+                    return p["id"]
         except KeyError as e:
             log(e)
             log(response.text)
@@ -186,8 +203,11 @@ class WikiJSAPI:
         variables = json.dumps(obj_vars)
         # log(query)
         # log(variables)
-        res = requests.post(WikiJSAPI.api_url, headers=cls.headers, json={"query": query, "variables": variables})
+        res = requests.post(
+            WikiJSAPI.api_url,
+            headers=cls.headers,
+            json={"query": query, "variables": variables},
+        )
         log(res.text)
-        wikijs_id = int(res.json()["data"]["pages"]["create"]["page"]["id"])
-        # log(wikijs_id)
-        return int(wikijs_id)
+        # log(res.json()["data"]["pages"]["create"]["page"]["id"])
+        return res.json()["data"]["pages"]["create"]["page"]["id"]

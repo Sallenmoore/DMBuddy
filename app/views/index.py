@@ -32,7 +32,7 @@ def imagegen():
     generates an image based on the description using AI
     """
     category = request.json.get("category")
-    pk = int(request.json.get("pk"))
+    pk = request.json.get("pk")
     log(category, pk)
     obj = import_model_from_str(category).get(pk)
     obj.task_running = True
@@ -81,7 +81,9 @@ def statblock():
 @index_page.route("/checktask", methods=("POST",))
 def checktask():
     log(request.json)
-    return {"results": get_object(request.json).status}
+    task = AutoTasks().get_task(request.json.get("id"))
+    log(task.status)
+    return {"results": task.status}
 
 
 ###############################################################################################
@@ -89,14 +91,16 @@ def checktask():
 ###############################################################################################
 
 
-@index_page.route("/npc", methods=("GET",))
-def npc(pk):
+@index_page.route("/npc", methods=("GET", "POST"))
+def npc():
+    pk = request.json.get("pk")
     session["page"] = "npc"
-    if request.args.get("pk"):
-        obj = NPC.get(int(request.json.get("pk")))
+    log(pk)
+    if pk:
+        obj = NPC.get(pk)
         context = obj.serialize() if obj else None
     else:
-        context = NPC.all()
+        context = [obj.serialize() for obj in NPC.all()]
     return {"results": context}
 
 
@@ -120,13 +124,16 @@ def npcgen():
 @index_page.route(rule="/npcchat", methods=("POST",))
 def npcchat():
     session["page"] = "npc"
-    pk = int(request.json.get("pk"))
-    message = request.json.get("message")
+    pk = request.json.get("pk")
     obj = NPC.get(pk)
-    obj.save()
-    runner = AutoTasks()
-    task = runner.task(npcchattask, pk=pk, message=message)
-    return {"results": task.id}
+    message = request.json.get("message")
+    if all((pk, message, obj)):
+        runner = AutoTasks()
+        log(obj)
+        task = runner.task(npcchattask, pk=pk, message=message)
+        log(task.id)
+        return {"results": task.id}
+    return {"results": None}
 
 
 @index_page.route("/npc-create", methods=("POST",))
@@ -164,7 +171,7 @@ def npcupdates():
     # Build Object Data
     obj_data = {}
     for k, v in request.json.items():
-        if k in ["pk", "age", "wis", "str", "cha", "int", "dex", "con", "hp", "ac"]:
+        if k in ["age", "wis", "str", "cha", "int", "dex", "con", "hp", "ac"]:
             obj_data[k] = int(v)
         elif k.split("-")[0] not in [
             "inventory",

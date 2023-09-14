@@ -27,9 +27,19 @@ class NPC(DnDCharacter):
         if isinstance(self.desc, list):
             self.desc = ".\n".join(self.desc)
 
-        self.passive_perception = math.floor(((int(self.wis) - 10) / 2)) + 10 if self.wis else 0
-        self.hp = self.con * (random.randint(int(self.level / 2), self.level) + 1) if not self.hp and self.con else 0
-        self.ac = self.dex + random.randint(self.level, self.level * 2) if not self.ac and self.dex else 0
+        self.passive_perception = (
+            math.floor(((int(self.wis) - 10) / 2)) + 10 if self.wis else 0
+        )
+        self.hp = (
+            self.con * (random.randint(int(self.level / 2), self.level) + 1)
+            if not self.hp and self.con
+            else 0
+        )
+        self.ac = (
+            self.dex + random.randint(self.level, self.level * 2)
+            if not self.ac and self.dex
+            else 0
+        )
 
     ### methods
     def statblock(self):
@@ -42,17 +52,12 @@ class NPC(DnDCharacter):
             if npc.pk not in self.connections:
                 self.connections[npc.pk] = {
                     "name": npc.name,
-                    "relationship": random.choice(["friend", "aquaintance", "enemy", "neutral", "strangers"]),
+                    "relationship": random.choice(
+                        ["friend", "aquaintance", "enemy", "neutral", "strangers"]
+                    ),
                 }
         self.save()
         # log(self.connections)
-
-    # @classmethod
-    # def generate(cls, *args, **kwargs):
-    #     npc = super().generate()
-    #     npc = NPC(**npc.serialize())
-    #     npc.save()
-    #     return npc
 
     @classmethod
     def update_npc_list(cls):
@@ -141,13 +146,31 @@ class NPC(DnDCharacter):
 
     def to_markdown(self):
         image_url = self.image.get("url")
-        personality_str = "".join([f"\n  - {v}" for v in self.personality]) if self.personality else ""
-        feature_str = "".join([f"\n  - {k}: {v}" for k, v in self.features.items()]) if self.features else ""
-        speed_str = "".join([f"\n  - {k}: {v}" for k, v in self.speed.items()]) if self.speed else ""
+        personality_str = (
+            "".join([f"\n  - {v}" for v in self.personality])
+            if self.personality
+            else ""
+        )
+        feature_str = (
+            "".join([f"\n  - {k}: {v}" for k, v in self.features.items()])
+            if self.features
+            else ""
+        )
+        speed_str = (
+            "".join([f"\n  - {k}: {v}" for k, v in self.speed.items()])
+            if self.speed
+            else ""
+        )
         wealth_str = "".join([f"\n  - {v}" for v in self.wealth]) if self.wealth else ""
-        resist_str = "".join([f"\n  - {v}" for v in self.resistances]) if self.resistances else ""
+        resist_str = (
+            "".join([f"\n  - {v}" for v in self.resistances])
+            if self.resistances
+            else ""
+        )
         spell_str = "".join([f"\n  - {v}" for v in self.spells]) if self.spells else ""
-        inventory_str = "".join([f"\n  - {v}" for v in self.inventory]) if self.inventory else ""
+        inventory_str = (
+            "".join([f"\n  - {v}" for v in self.inventory]) if self.inventory else ""
+        )
 
         page_str = f"""# {self.name}
 

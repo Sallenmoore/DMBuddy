@@ -1,12 +1,13 @@
-from dmtoolkit.models.dndcharacter import Character as DnDCharacter
-from autonomous import log
-from utils import WikiJSAPI
 import math
-import markdown_to_json
 import random
+
+import markdown_to_json
+from autonomous import log
+from dmtoolkit.models.dndcharacter import Character as DnDCharacter
 
 # external Modules
 from flask import get_template_attribute
+from utils import WikiJSAPI
 
 
 class NPC(DnDCharacter):
@@ -43,7 +44,10 @@ class NPC(DnDCharacter):
 
     ### methods
     def statblock(self):
+        if self.dnd_beyond_id:
+            self.updateinfo()
         snippet = get_template_attribute("macros/_npc.html", "statblock")
+
         # log(self.__dict__)
         return snippet(self.serialize())
 

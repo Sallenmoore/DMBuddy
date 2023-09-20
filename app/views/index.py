@@ -22,8 +22,15 @@ def index():
 
 
 ###############################################################################################
-#                                            API                                              #
+#                                            Tasks                                            #
 ###############################################################################################
+
+
+@index_page.route("/checktask", methods=("POST",))
+def checktask():
+    task = AutoTasks().get_task(request.json.get("id"))
+    log(task.status)
+    return {"results": task.return_value, "status": task.status}
 
 
 @index_page.route("/imagegen", methods=("POST",))
@@ -40,50 +47,6 @@ def imagegen():
     runner = AutoTasks()
     task = runner.task(imagegentask, model=category, pk=pk)
     return {"results": task.id}
-
-
-# ///////////////////////////////////////////////////////////////////
-
-
-@index_page.route("/search", methods=("POST",))
-def search():
-    session["page"] = "reference"
-    data = {"results": []}
-    category = request.json.get("category")
-    keyword = request.json.get("keyword")
-
-    model = import_model_from_str(category)
-
-    data["results"] += [i.serialize() for i in model.search(name=keyword)]
-
-    log(len(data["results"]))
-
-    return data
-
-
-@index_page.route("/statblock", methods=("POST",))
-def statblock():
-    # log(request.json)
-    obj = get_object(request.json)
-    # log(obj)
-    return (
-        {"results": {"statblock": obj.statblock(), "obj": obj.serialize()}}
-        if statblock
-        else {"results": ""}
-    )
-
-
-###############################################################################################
-#                                            Tasks                                            #
-###############################################################################################
-
-
-@index_page.route("/checktask", methods=("POST",))
-def checktask():
-    log(request.json)
-    task = AutoTasks().get_task(request.json.get("id"))
-    log(task.status)
-    return {"results": task.status}
 
 
 ###############################################################################################
@@ -111,13 +74,13 @@ def npc_updates_from_canon():
     return {"results": context}
 
 
-@index_page.route("/npcgen", methods=("POST",))
+@index_page.route("/npcgen", methods=("GET", "POST"))
 def npcgen():
     """
     generates a random NPC using AI
     """
     runner = AutoTasks()
-    task = runner.task(npcgentask)
+    task = runner.task(npcgentask, pk=request.json.get("pk"))
     return {"results": task.id}
 
 
@@ -125,11 +88,9 @@ def npcgen():
 def npcchat():
     session["page"] = "npc"
     pk = request.json.get("pk")
-    obj = NPC.get(pk)
     message = request.json.get("message")
-    if all((pk, message, obj)):
+    if all((pk, message)):
         runner = AutoTasks()
-        log(obj)
         task = runner.task(npcchattask, pk=pk, message=message)
         log(task.id)
         return {"results": task.id}
@@ -203,13 +164,47 @@ def npcupdates():
 
 @index_page.route("/npc-delete", methods=("POST",))
 def npcdelete():
-    # log(request.json)
+    log(request.json)
     result = None
-    # log(category, pk)
+
     try:
-        result = get_object(request.json).delete()
+        obj = get_object(request.json)
+        log(obj)
+        obj.remove_from_canon()
+        obj.delete()
     except Exception as e:
         log(e)
         result = f"Unexpected Error: {e}"
 
     return {"results": result}
+
+
+# ///////////////////////////// REFERENCE //////////////////////////////////////
+
+
+@index_page.route("/search", methods=("POST",))
+def search():
+    session["page"] = "reference"
+    data = {"results": []}
+    category = request.json.get("category")
+    keyword = request.json.get("keyword")
+
+    model = import_model_from_str(category)
+
+    data["results"] += [i.serialize() for i in model.search(name=keyword)]
+
+    log(len(data["results"]))
+
+    return data
+
+
+@index_page.route("/statblock", methods=("POST",))
+def statblock():
+    # log(request.json)
+    obj = get_object(request.json)
+    # log(obj)
+    return (
+        {"results": {"statblock": obj.statblock(), "obj": obj.serialize()}}
+        if statblock
+        else {"results": ""}
+    )

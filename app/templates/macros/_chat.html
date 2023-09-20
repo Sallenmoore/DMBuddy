@@ -1,25 +1,27 @@
 {% macro panel()-%}
-<h3>NPC Chat</h3>
-<div class="row is-vertical" id="npc-chat">
-    <div class="column">
-        <h4>Conversation Summary</h4>
-        <div class="panel has-bg-dark" id="npcchat-summary">
+<div class="panel has-bg-primary" id="npc-panel">
+    <h3>NPC Chat</h3>
+    <div class="row is-vertical" id="npc-chat">
+        <div class="column">
+            <h4>Conversation Summary</h4>
+            <div class="panel has-bg-dark" id="npcchat-summary">
+            </div>
         </div>
-    </div>
-    <div class="column">
-        <form id="chat-form" data-pk="">
-            <textarea class="has-bg-light" name="pc-chat" id="pc-chat"></textarea>
-            <button class="button is-small" type="submit">Send</button>
-        </form>
-    </div>
-    <div class="column ">
-        <h4>Player Message</h4>
-        <div class="panel has-bg-light has-text-dark" id="npcchat-message">
+        <div class="column">
+            <form id="chat-form" data-pk="">
+                <textarea class="has-bg-light" name="pc-chat" id="pc-chat"></textarea>
+                <button class="button is-small" type="submit">Send</button>
+            </form>
         </div>
-    </div>
-    <div class="column">
-        <h4 id="chat-name"></h4>
-        <div class="panel has-bg-light has-text-dark" id="npcchat-response">
+        <div class="column ">
+            <h4>Player Message</h4>
+            <div class="panel has-bg-light has-text-dark" id="npcchat-message">
+            </div>
+        </div>
+        <div class="column">
+            <h4 id="chat-name"></h4>
+            <div class="panel has-bg-light has-text-dark" id="npcchat-response">
+            </div>
         </div>
     </div>
 </div>

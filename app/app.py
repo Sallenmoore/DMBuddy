@@ -5,6 +5,8 @@ from autonomous.assets import build_assets
 from config import Config
 from flask import Flask
 from views.index import index_page
+from views.auth import auth_page
+from views.api import api_page
 
 
 def create_app():
@@ -32,4 +34,6 @@ def create_app():
     #           Blueprints               #
     ######################################
     app.register_blueprint(index_page)
+    app.register_blueprint(auth_page)
+    app.register_blueprint(api_page)
     return app

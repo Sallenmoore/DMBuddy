@@ -31,12 +31,10 @@ deepclean: clean
 
 ###### TESTING #######
 
-###### TESTING #######
-
 debug: clean run
 	docker-compose logs -f
 
-cleandebug: clean build debug
+cleandebug: build debug
 
 tests: 
 	docker-compose up --build -d

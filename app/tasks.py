@@ -1,10 +1,20 @@
 from autonomous import log
-from models import NPC, Encounter, Item, Monster, Player, Shop, Spell
+from models import (
+    Character,
+    Encounter,
+    Item,
+    Creature,
+    Location,
+    Region,
+    Faction,
+    City,
+    World,
+)
 from utils import import_model_from_str
 
 
 def npcgentask(*args, **kwargs):
-    result = NPC.generate()
+    result = Character.generate()
     result.generate_image()
     # result.save()
     log(result)
@@ -14,7 +24,7 @@ def npcgentask(*args, **kwargs):
 def npcchattask(pk=None, message=None, **kwargs):
     log(pk, message)
     if pk and message:
-        obj = NPC.get(pk)
+        obj = Character.get(pk)
         obj.chat(message)
         return {"pk": obj.pk}
 

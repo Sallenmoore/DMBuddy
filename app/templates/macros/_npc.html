@@ -1,42 +1,48 @@
+{% import 'macros/_chat.html' as chat with context %}
+
 {% macro panel(info) -%}
 <div class="panel">
-    <div class="row is-vertical">
-        <div class="column">
-            <button class="button is-primary is-small" id="generate-npc">Generate NPC</button>
-        </div>
-        <div class="column">
+    <div class="row">
+        <div class="column is-half">
             <button class="button is-secondary is-small" id="update-canon-npc">Update from Canon</button>
         </div>
-        <div class="column">
-            <h4>Canon NPCs</h4>
-            <ul id="canon-npc-list">
-                {% for npc in npcs %}
-                {% if npc.canon %}
-
-                <li id="list-npc-{{npc.pk}}" class="statcard-item" data-pk="{{npc.pk}}" data-category="NPC">
-                    <a href="#" class="statcard-view">
-                        {{npc.name}}
-                    </a>
-                    <a href="#" class="button__close item-delete is-float-right"></a>
-                </li>
-                {% endif %}
-                {% endfor %}
-            </ul>
+        <div class="column is-half">
+            <button class="button is-primary is-small" id="generate-npc">Generate NPC</button>
         </div>
-        <div class="column" id="npc-list-container">
-            <h4>Random NPCs</h4>
-            <ul id="free-npc-list">
-                {% for npc in npcs %}
-                {% if not npc.canon %}
-                <li id="list-npc-{{npc.pk}}" class="statcard-item" data-pk="{{npc.pk}}" data-category="NPC">
-                    <a href="#" class="statcard-view">
+        <div class="column is-half">
+            <h4>Canon NPCs</h4>
+            <div class="is-select" id="canon-npc-list">
+                <select class="npc-list" data-category="NPC">
+                    <option></option>
+                    {% for npc in npcs %}
+                    {% if npc.canon %}
+                    <option id="list-npc-{{npc.pk}}" value="{{npc.pk}}">
                         {{npc.name}}
-                    </a>
-                    <a href="#" class="button__close item-delete is-float-right"></a>
-                </li>
-                {% endif %}
-                {% endfor %}
-            </ul>
+                    </option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="column is-half">
+            <h4>Random NPCs</h4>
+            <div class="is-select" id="free-npc-list">
+                <select class="npc-list" data-category="NPC">
+                    <option></option>
+                    {% for npc in npcs %}
+                    {% if not npc.canon %}
+                    <option id="list-npc-{{npc.pk}}" value="{{npc.pk}}">
+                        {{npc.name}}
+                    </option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="chat">
+        <div class="column">
+            {{chat.panel()}}
         </div>
     </div>
 </div>
@@ -47,11 +53,40 @@
     <div class="row statblock" id="pcstatblock-{{info.pk}}" data-pk="{{info.pk}}" data-category="NPC">
         <div class="column ">
             <div id="npc-title-block-{info.pk}" class="row">
-                <div class="column">
+                <div class="column is-shrink">
                     <input value="{{info.name}}" name="name" id="name-{{info.pk}}" class="pc-details title" type="text">
                 </div>
-                <div class="column is-shrink">
-                    <a class="button save-updates is-small">Save Updates</a>
+                <div class="column">
+                    <div class="row">
+                        <div class="column is-full">
+                            <span class="tag">pk: {{info.pk}}</span>
+                            <span class="tag">Wikijs ID: {{info.wikijs_id}}</span>
+                            <span class="tag">World Anvil ID: {{info.wa_artcle_id}}</span>
+                        </div>
+                        <div class="column is-shrink">
+                            <a class="button autocomplete-profile is-small">
+                                Autocomplete Profile
+                            </a>
+                        </div>
+                        <div class="column is-shrink">
+                            <a class="button save-updates is-small">
+                                Save Updates
+                            </a>
+                        </div>
+                        <div class="column is-shrink is-tablet-up">
+                            <div class="is-switch">
+                                <input value="{{info.canon}}" type="checkbox" id="canon-{{info.pk}}" name="canon" {% if
+                                    info.canon %} checked {%endif%}>
+                                <label for="canon-{{info.pk}}" class="has-bg-dark"></label>
+                            </div>
+                            <label class="attribute">Canon</label>
+                        </div>
+                        <div class="column is-shrink is-tablet-up">
+                            <button class="button is-small delete-npc">
+                                <iconify-icon icon="fluent:delete-16-regular"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="npc-title-stats-block-{info.pk}" class="row">
@@ -64,35 +99,21 @@
                     <label for="residence-{{info.pk}}" class="subtitle">Residence</label>
                     <input value="{{info.residence}}" name="residence" id="residence-{{info.pk}}" type="text">
                 </div>
-                <div class="column">
-                    <label class="attribute">Canon</label>
-                    <div class="is-switch">
-                        <input value="{{info.canon}}" type="checkbox" id="canon-{{info.pk}}" name="canon" {% if
-                            info.canon %} checked {%endif%}>
-                        <label for="canon-{{info.pk}}" class="has-bg-dark"></label>
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <span class="tag">pk: {{info.pk}}</span>
-                    <span class="tag">Wikijs ID: {{info.wikijs_id}}</span>
-                    <br>
-                    <span class="tag">World Anvil ID: {{info.wa_artcle_id}}</span>
-                </div>
             </div>
             <div id="npc-image-block-{info.pk}" class="row">
                 <div class="column is-4">
                     <div class="row is-vertical">
                         <div class="column">
                             <div class="image is-rounded-tile">
-                                <img src="{{info.image['url']}}" />
+                                <img id="npc-image-portrait" src="{{info.image['url']}}" />
                             </div>
                             <div class="row">
                                 <div class="column is-shrink">
-                                    <a class="button generate-image is-small">
+                                    <a class="button generate-npc-image is-small">
                                         <iconify-icon icon="eos-icons:ai"></iconify-icon>
                                     </a>
                                 </div>
-                                <div class="column is-shrink">
+                                <div class="column is-shrink is-tablet-up">
                                     <div class="is-file-input">
                                         <input type="file" id="npc-upload-image">
                                         <label for="npc-upload-image" class="button is-small is-secondary">
@@ -142,7 +163,7 @@
                 </div>
                 <div class="column">
                     <div class="row">
-                        <div class="column is-full">
+                        <div class="column is-full is-tablet-up">
                             <label class="subtitle">Description</label>
                             <textarea name="desc" id="desc-{{info.pk}}">{{info.desc | safe}}</textarea>
                         </div>
@@ -150,7 +171,7 @@
                             <label class="subtitle">Character History</label>
                             <textarea name="backstory" id="backstory-{{info.pk}}">{{info.backstory | safe}}</textarea>
                         </div>
-                        <div class="column is-full">
+                        <div class="column is-full is-tablet-up">
                             <label class="subtitle">Connections</label>
                             <div class="is-input-group">
                                 <div class="is-select">
@@ -208,7 +229,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="column is-2 has-bg-muted">
+                <div class="column is-2 has-bg-muted is-tablet-up">
                     <label class="subtitle">Personality</label>
                     {% for k in info.personality %}
                     <input value="{{k}}" name="personality-{{loop.index}}" id="personality-{{info.pk}}-{{loop.index}}"
@@ -217,7 +238,7 @@
                     <input placeholder="add trait" name="personality-add" id="personality-add"
                         class="pc-details has-bg-transparent has-text-light" type="text">
                 </div>
-                <div class="column" id="character-stats-{{info.pk}}">
+                <div class="column is-tablet-up" id="character-stats-{{info.pk}}">
                     <div class="row">
                         <div class="column is-4 is-inline-label">
                             <label class="attribute">AC</label>
@@ -281,7 +302,7 @@
                     </div>
                 </div>
             </div>
-            <div id="npc-details-block-{info.pk}" class="row">
+            <div id="npc-details-block-{info.pk}" class="row is-tablet-up">
                 <div class="column">
                     <h3>Resistances and Immunities</h3>
                     <svg class="tapered-rule">

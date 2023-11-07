@@ -2,14 +2,13 @@
 {% import 'macros/_nav.html' as nav with context %}
 {% import 'macros/_npc.html' as npcstab with context %}
 {% import 'macros/_reference.html' as referencetab with context %}
-{% import 'macros/_chat.html' as chat with context %}
 
 {% block content %}
 
 {{ nav.fullnav() }}
 
 <div class="row">
-    <div class="column is-shrink">
+    <div class="column  is-4">
         <div class="row">
             <div class="column tab-panel is-full {% if session.get('page', 'reference') != 'reference' %} is-hidden {% endif %}"
                 id="reference-tab">
@@ -24,11 +23,7 @@
         <div class="row is-vertical" id="statblock">
         </div>
     </div>
-    <div class="column is-4">
-        <div class="row is-vertical" id="chat">
-            {{chat.panel()}}
-        </div>
-    </div>
+
 </div>
 {# <div class="row">
     <div class="column has-bg-light" id="tester" style="min-width:10em;min-height:20em;overflow:auto;">

@@ -1,19 +1,18 @@
-import json
 import random
 
 from autonomous import log
-from autonomous.ai import OpenAI
-
 from models import City, Encounter, Faction, Location
 from models.ttrpgobject import TTRPGObject
 
 
 class Region(TTRPGObject):
     
-    cities:list = []
-    locations:list = []
-    factions:list = []
-    encounters:list = []
+    attributes = TTRPGObject.attributes | {
+        "cities":[],
+        "locations":[],
+        "factions":[],
+        "encounters":[],
+    }
 
     _environments = [
         "coastal",
@@ -109,8 +108,7 @@ class Region(TTRPGObject):
         return self.factions
 
     def create_encounter(self, num_players=5, level=1):
-        for _ in range(n):
-            self.encounters.append(
+        self.encounters.append(
                 Encounter.generate(world=self.world, num_players=5, level=1)
             )
         self.save()

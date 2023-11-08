@@ -1,26 +1,24 @@
-import json
 import random
 
 from autonomous import log
-from autonomous.ai import OpenAI
-
 from models.ttrpgobject import TTRPGObject
 
 
 class Creature(TTRPGObject):
-    type: str = ""
-    size: str = ""
-    goal: str = ""
-    abilities: list = []
-    inventory: list = []
-    hitpoints: int = 0
-    strength: int = 0
-    dexterity: int = 0
-    constitution: int = 0
-    wisdom: int = 0
-    intelligence: int = 0
-    charisma: int = 0
-
+    attributes = TTRPGObject.attributes | {
+        "type": "",
+        "size": "",
+        "goal": "",
+        "abilities": [],
+        "inventory": [],
+        "hitpoints": 0,
+        "strength": 0,
+        "dexterity": 0,
+        "constitution": 0,
+        "wisdom": 0,
+        "intelligence": 0,
+        "charisma": 0,
+    }
     _funcobj = {
         "name": "generate_creature",
         "description": "completes Creature data object",

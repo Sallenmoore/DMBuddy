@@ -1,16 +1,14 @@
-import json
-
 from autonomous import log
-from autonomous.ai import OpenAI
-
 from models.ttrpgobject import TTRPGObject
 
 
 class Item(TTRPGObject):
-    rarity:str = ""
-    cost:int = 0
-    duration:str = ""
-    weight:int = 0
+    attributes = TTRPGObject.attributes | {
+        "rarity": "",
+        "cost": 0,
+        "duration": "",
+        "weight": 0,
+    }
     
     _funcobj = {
         "name": "generate_item",

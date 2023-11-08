@@ -1,19 +1,19 @@
-import json
+
 import random
 
 from autonomous import log
-from autonomous.ai import OpenAI
-
 from models.ttrpgobject import TTRPGObject
-
+from autonomous.model.autoattribute import AutoAttribute
 from .character import Character
 
 
 class Faction(TTRPGObject):
-    goal: str = ""
-    status: str = ""
-    leader: Character = None
-    members: list[Character] = []
+    attributes = TTRPGObject.attributes | {
+        "goal": AutoAttribute("TEXT", default=""),
+        "status": AutoAttribute("TEXT", default=""),
+        "leader": None,
+        "members": []
+    }
 
     _personality = {
             "social": [

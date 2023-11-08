@@ -1,9 +1,9 @@
 import json
-from typing import Any, Dict
 
 from autonomous import log
 from autonomous.ai import OpenAI
 from autonomous.model.automodel import AutoModel
+from autonomous.model.autoattribute import AutoAttribute
 from autonomous.storage.cloudinarystorage import CloudinaryStorage
 from autonomous.storage.markdown import Page
 from slugify import slugify
@@ -13,18 +13,20 @@ class TTRPGObject(AutoModel):
     _storage = CloudinaryStorage()
     _wiki_api = Page
 
-    name: str = ""
-    image_data: dict = {"url": "", "raw": None, "asset_id": ""}
-    backstory: str = ""
-    bs_summary: str = ""
-    desc: str = ""
-    dod: str = ""
-    dob: str = ""
-    traits: list = []
-    world: Any = None
-    wiki_id: str = ""
-    wiki_path: str = ""
-    notes: list[str] = ["TBD"]
+    attributes = {
+        "name": "",
+        "image_data": {"url": "", "raw": None, "asset_id": ""},
+        "backstory": AutoAttribute("TEXT", default=""),
+        "bs_summary": "",
+        "desc": AutoAttribute("TEXT", default=""),
+        "dod": "",
+        "dob": "",
+        "traits": [],
+        "world": None,
+        "wiki_id": "",
+        "wiki_path": "",
+        "notes": ["TBD"]
+    }
 
     def __getattr__(self, key):
         if key == "genre" and self.world:
@@ -48,7 +50,7 @@ class TTRPGObject(AutoModel):
     @property
     def backstory_summary(self):
         if not self.bs_summary:
-            primer = "As an expert AI in fictional Worldbuilding fof TTRPGs, summarize the following backstory into a concise paragraph, creating a readable summary that could help a person understand the main points of the backstory. Avoid unnecessary details."
+            primer = "As an expert AI in fictional Worldbuilding for TTRPGs, summarize the following backstory into a concise paragraph, creating a readable summary that could help a person understand the main points of the backstory. Avoid unnecessary details."
 
             self.bs_summary = OpenAI().summarize_text(self.backstory, primer=primer)
             self.save()
@@ -60,7 +62,7 @@ class TTRPGObject(AutoModel):
 
     def image(self, url=None, update=False):
         log(self.image_data)
-        self.image_data["url"] = url or self.image_data.get("url")
+        self.image_data["url"] = url or self.image_data["url"]
         if update or not self.image_data["url"]:
             if not self.image_data.get("raw"):
                 resp = OpenAI().generate_image(
@@ -89,38 +91,26 @@ class TTRPGObject(AutoModel):
 
     @classmethod
     def generate(cls, prompt, primer):
-        if hasattr(cls, "funcobj"):
-            cls.funcobj["parameters"]["required"] = list(
-                cls.funcobj["parameters"]["properties"].keys()
-            )
-            response = OpenAI().generate_text(prompt, primer, functions=cls.funcobj)
-        else:
-            response = OpenAI().generate_text(prompt, primer)
+        
 
         json_invalid_max = 10
-        json_retries = 1
-        obj_data = None
-        while json_invalid_max > 0:
-            try:
-                obj_data = json.loads(response, strict=False)
-            except json.JSONDecodeError as e:
-                response = response[: e.pos] + response[e.pos + 1 :]
-                log(e, response)
-                if json_retries:
-                    if hasattr(cls, "funcobj"):
-                        cls._funcobj["parameters"]["required"] = list(
-                            cls._funcobj["parameters"]["properties"].keys()
-                        )
-                        response = OpenAI().generate_text(
-                            prompt, primer, functions=cls._funcobj
-                        )
-                    else:
-                        response = OpenAI().generate_text(prompt, primer)
-                        json_invalid_max = 10
-                    json_retries -= 1
+        json_retries = 2
+        while json_retries > 0:
+            cls._funcobj["parameters"]["required"] = list(
+                cls._funcobj["parameters"]["properties"].keys()
+            )
+            response = OpenAI().generate_text(prompt, primer, functions=cls._funcobj)
+            for _ in range(json_invalid_max):
+                try:
+                    obj_data = json.loads(response, strict=False)
+                except json.JSONDecodeError as e:
+                    log(response)
+                    response = response[: e.pos] + response[e.pos + 1 :]
                 else:
-                    json_invalid_max -= 1
-        return obj_data
+                    return obj_data
+    
+            json_retries -= 1
+        return None
 
     def page_data(self):
         return {}

@@ -1,35 +1,36 @@
-import json
 import random
-from typing import Any
 
 from autonomous import log
 from autonomous.ai import OpenAI
-
+from autonomous.model.autoattribute import AutoAttribute
 from models.ttrpgobject import TTRPGObject
 
 
 class Character(TTRPGObject):
-    npc: bool = True
-    canon: bool = False
-    gender: str = ""
-    occupation: str = ""
-    goal: str = ""
-    race: str = ""
-    hitpoints: int = 0
-    strength: int = 0
-    dexterity: int = 0
-    constitution: int = 0
-    wisdom: int = 0
-    intelligence: int = 0
-    charisma: int = 0
-    wealth: list[str] = []
-    inventory: list[str] = []
-    chats: dict = {
-        "history": [],
-        "summary": "The beginning of a conversation between a TTRPG PC and NPC.",
-        "message": "",
-        "response": "",
+    attributes = TTRPGObject.attributes | {
+        "npc": True,
+        "canon": False,
+        "gender": "",
+        "occupation": "",
+        "goal": AutoAttribute("TEXT", default=""),
+        "race": "",
+        "hitpoints": 0,
+        "strength": 0,
+        "dexterity": 0,
+        "constitution": 0,
+        "wisdom": 0,
+        "intelligence": 0,
+        "charisma": 0,
+        "wealth": [],
+        "inventory": [],
+        "chats": {
+            "history": [],
+            "summary": "The beginning of a conversation between a TTRPG PC and NPC.",
+            "message": "",
+            "response": "",
+        }
     }
+    
     _genders = ["male", "female", "non-binary"]
 
     _personality = {

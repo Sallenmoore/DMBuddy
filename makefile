@@ -38,7 +38,7 @@ cleandebug: build debug
 
 tests: 
 	docker-compose up --build -d
-	docker-compose logs
+	docker compose logs --timestamps
 	docker exec -it $(APP_NAME) python -m pytest --cov=app -rP -rx -l -x --log-level=INFO --no-cov-on-fail
 
 cleantests: clean build tests

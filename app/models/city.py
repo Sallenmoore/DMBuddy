@@ -1,18 +1,18 @@
 import random
-from typing import Any
 
 from autonomous import log
-
 from models.encounter import Encounter
 from models.location import Location
 from models.ttrpgobject import TTRPGObject
 
 
 class City(TTRPGObject):
-    population: int = 0
-    factions: list = []
-    locations: dict = {}
-    encounters: list = []
+    attributes = TTRPGObject.attributes | {
+        "population": 0,
+        "factions": [],
+        "locations": {},
+        "encounters": []
+    }
 
     @property
     def personality(self):
@@ -162,10 +162,9 @@ class City(TTRPGObject):
         self.save()
 
     def create_encounter(self, num_players=5, level=1):
-        for _ in range(n):
-            self.encounters.append(
-                Encounter.generate(world=self.world, num_players=5, level=1)
-            )
+        self.encounters.append(
+            Encounter.generate(world=self.world, num_players=5, level=1)
+        )
         self.save()
         return self.encounters
 

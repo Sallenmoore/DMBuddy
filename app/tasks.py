@@ -10,7 +10,6 @@ from models import (
     City,
     World,
 )
-from utils import import_model_from_str
 
 
 def npcgentask(*args, **kwargs):
@@ -28,6 +27,8 @@ def npcchattask(pk=None, message=None, **kwargs):
         obj.chat(message)
         return {"pk": obj.pk}
 
+def imagegentask(*args, **kwargs):
+    return "TBD"
 
 # def encountergentask(*args, **kwargs):
 #     result = Encounter.generate()
@@ -40,12 +41,6 @@ def npcchattask(pk=None, message=None, **kwargs):
 #     result.generate_image()
 #     result.task_running = False
 #     return {"pk": result.pk}
-
-
-def imagegentask(model, pk, module=None):
-    obj = get_object(pk, model)
-    obj.generate_image()
-    return obj.image.get("url")
 
 
 # def watask(*args, **kwargs):

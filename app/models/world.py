@@ -1,19 +1,18 @@
-import random
-from typing import Any
 
 from autonomous import log
-
 from models import Region
 from models.ttrpgobject import TTRPGObject
 
 
 class World(TTRPGObject):
     _genres = ["fantasy", "sci-fi", "hardboiled", "horror", "post-apocalyptic"]
-    regions: list = []
-    system: Any = None
-    genre: str = ""
-    user: Any
-
+    
+    attributes = TTRPGObject.attributes | {
+        "regions": [],
+        "system": None,
+        "genre": "",
+        "user":None
+    }
     def __init__(self, *args, **kwargs):
         if not self.name:
             self.name = f"{self.genre.capitalize()} World"

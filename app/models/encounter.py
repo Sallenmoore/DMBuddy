@@ -1,16 +1,17 @@
 import random
 
 from autonomous import log
-
 from models.ttrpgobject import TTRPGObject
 
 LOOT_MULTIPLIER = 3
 
 
 class Encounter(TTRPGObject):
-    difficulty: str = ""
-    enemies: list = []
-    loot: list[str] = []
+    attributes = TTRPGObject.attributes | {
+        "difficulty": "",
+        "enemies": [],
+        "loot":[]
+    }
 
     _difficulty_list=  [
             "trivial",

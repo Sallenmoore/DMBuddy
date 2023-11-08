@@ -1,15 +1,15 @@
 from autonomous import log
-
 from models.ttrpgobject import TTRPGObject
 
 from .character import Character
 
 
 class Location(TTRPGObject):
-    owner:Character = None
-    inhabitants:list[Character] = []
-    inventory:list[str] = []
-    
+    attributes = TTRPGObject.attributes | {
+        "owner": None,
+        "inhabitants": [],
+        "inventory": []
+    }
     _funcobj = {
         "name": "generate_location",
         "description": "builds a Location model object",

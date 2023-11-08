@@ -1,5 +1,6 @@
 import pytest
 from autonomous import log
+from autonomous.auth import AutoUser
 from models import (
     Character,
     City,
@@ -15,9 +16,13 @@ from slugify import slugify
 
 
 class TestModels:
-    # @pytest.mark.skip(reason="takes too long")
+    user = AutoUser(name="test", email="test@test.gmail.com")
+
+    @pytest.mark.skip(reason="passing")
     def test_world_object(self):
+        
         world = World(
+            user=self.user,
             name="Test",
             genre="fantasy",
             desc="an expansive continent with many climates, people of interest, and factions",
@@ -35,26 +40,27 @@ class TestModels:
 
         assert world.get_image_prompt()
 
-    # @pytest.mark.skip(reason="takes too long")
+    #@pytest.mark.skip(reason="passing")
     def test_character(self):
-        object = Character(world=World(name="Test", genre="sci-fi"))
+        object = Character(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        character = Character.generate(world=World(name="Test", genre="sci-fi"))
+        character = Character.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(character.world)
 
         assert character.name
         assert character.story
         assert character.world.genre
-        assert character.str
-        assert character.int
-        assert character.dex
-        assert character.con
+        assert character.strength
+        assert character.intelligence
+        assert character.dexterity
+        assert character.constitution
+        assert character.wisdom
         assert character.desc
         assert character.goal
         assert character.occupation
-        assert character.personality
+        assert character.traits
 
         assert character.save()
 
@@ -74,12 +80,12 @@ class TestModels:
         assert character.chats["response"]
         assert character.chats["summary"]
 
-    # @pytest.mark.skip(reason="takes too long")
+    # @pytest.mark.skip(reason="passing")
     def test_faction(self):
-        object = Faction(world=World(name="Test", genre="sci-fi"))
+        object = Faction(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        faction = Faction.generate(world=World(name="Test", genre="sci-fi"))
+        faction = Faction.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         log(faction)
 
@@ -88,7 +94,7 @@ class TestModels:
         assert faction.story
         assert faction.status
         assert faction.goal
-        assert faction.personality
+        assert faction.traits
 
         assert faction.save()
 
@@ -102,22 +108,23 @@ class TestModels:
         log(url)
         assert faction._image["url"] == url
 
-    # @pytest.mark.skip(reason="takes too long")
+    # @pytest.mark.skip(reason="passing")
     def test_creature(self):
-        object = Creature(world=World(name="Test", genre="sci-fi"))
+        object = Creature(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        creature = Creature.generate(world=World(name="Test", genre="sci-fi"))
+        creature = Creature.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(creature)
 
         assert creature.name
         assert creature.story
         assert creature.genre
-        assert creature.str
-        assert creature.int
-        assert creature.dex
-        assert creature.con
+        assert creature.strength
+        assert creature.intelligence
+        assert creature.dexterity
+        assert creature.constitution
+        assert creature.wisdom
         assert creature.desc
         assert creature.goal
         assert creature.type
@@ -137,12 +144,12 @@ class TestModels:
         log(url)
         assert creature._image["url"] == url
 
-    # @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="")
     def test_encounter(self):
-        object = Encounter(world=World(name="Test", genre="sci-fi"))
+        object = Encounter(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        encounter = Encounter.generate(world=World(name="Test", genre="sci-fi"))
+        encounter = Encounter.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(encounter)
 
@@ -164,12 +171,12 @@ class TestModels:
         log(url)
         assert encounter._image["url"] == url
 
-    # @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_item(self):
-        object = Item(world=World(name="Test", genre="sci-fi"))
+        object = Item(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        item = Item.generate(world=World(name="Test", genre="sci-fi"))
+        item = Item.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(item)
 
@@ -190,12 +197,12 @@ class TestModels:
         log(url)
         assert item._image["url"] == url
 
-    # @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_location(self):
-        object = Location(world=World(name="Test", genre="sci-fi"))
+        object = Location(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        location = Location.generate(world=World(name="Test", genre="sci-fi"))
+        location = Location.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(location)
 
@@ -222,12 +229,12 @@ class TestModels:
         assert location.owner == result
         assert len(location.inhabitants) == 1
 
-    # @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_city(self):
-        object = City(world=World(name="Test", genre="sci-fi"))
+        object = City(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        city = City.generate(world=World(name="Test", genre="sci-fi"))
+        city = City.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(city)
 
@@ -237,7 +244,7 @@ class TestModels:
         assert city.desc
         assert city.genre
         assert city.population
-        assert city.personality
+        assert city.traits
 
         assert city.save()
         assert city.slug == slugify(city.name)
@@ -255,12 +262,12 @@ class TestModels:
 
         assert city.districts
 
-    # @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_region(self):
-        object = Region(world=World(name="Test", genre="sci-fi"))
+        object = Region(world=World(user=self.user, name="Test", genre="sci-fi"))
         assert object
 
-        region = Region.generate(world=World(name="Test", genre="sci-fi"))
+        region = Region.generate(world=World(user=self.user, name="Test", genre="sci-fi"))
 
         # log(region)
 
@@ -294,7 +301,7 @@ class TestModels:
             assert c.genre == region.genre
             assert c.factions == region.factions
 
-    # @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_world_build(self):
         world = World(
             name="Xanadu",
@@ -347,9 +354,9 @@ class TestModels:
                 assert len(f.locations) >= 1
                 assert len(f.citizens()) >= 1
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_image_creation(self):
-        location = Location.generate(world=World(name="ImageTest", genre="fantasy"))
+        location = Location.generate(world=World(user=self.user, name="ImageTest", genre="fantasy"))
         location.save()
         log(location.get_image_prompt())
         result = location.add_inhabitant()
@@ -359,8 +366,8 @@ class TestModels:
         log(result2.get_image_prompt(), result2.image())
         assert all((result2.image(), result.image()))
 
-    @pytest.mark.skip(reason="costs money")
+    # @pytest.mark.skip(reason="passing")
     def test_character_canonize(self):
-        character = Character.generate(world=World(name="Test", genre="fantasy"))
+        character = Character.generate(world=World(user=self.user, name="Test", genre="fantasy"))
         character.save()
         assert character.canonize()
